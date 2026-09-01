@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!--
+  Профиль для пользователя дашбордов.
+
+  Смысл: агент генерирует SQL, поэтому ограничения ставятся на стороне сервера,
+  а не парсингом запроса.
+
+  Про readonly=2 вместо 1. Значение 1 запрещает любой SET, и на этом падает
+  плагин ClickHouse для Grafana: он выставляет max_execution_time на каждый
+  запрос и получает "Cannot modify 'max_execution_time' setting in readonly
+  mode". Значение 2 разрешает чтение и SET, но по-прежнему запрещает запись
+  и DDL. Возможность поднять себе лимиты закрывается не режимом, а секцией
+  constraints ниже: настройку можно менять только в пределах потолка, а сам
+  readonly объявлен неизменяемым.
+-->
+<clickhouse>
+    <profiles>
+        <dashboard_profile>
+            <!-- 2 = чтение + SET; запись и DDL по-прежнему запрещены -->
+            <readonly>2</readonly>
+            <allow_ddl>0</allow_ddl>
+
+            <!-- время и объём одного запроса -->
+            <max_execution_time>30</max_execution_time>
+            <timeout_overflow_mode>throw</timeout_overflow_mode>
+
+            <!-- сколько данных запросу разрешено прочитать -->
+            <max_rows_to_read>500000000</max_rows_to_read>
+            <max_bytes_to_read>20000000000</max_bytes_to_read>
+            <read_overflow_mode>throw</read_overflow_mode>
+
+            <!-- сколько разрешено вернуть: страховка от SELECT * без LIMIT -->
+            <max_result_rows>100000</max_result_rows>
+            <max_result_bytes>200000000</max_result_bytes>
+            <result_overflow_mode>throw</result_overflow_mode>
+
+            <max_memory_usage>4000000000</max_memory_usage>
+            <max_threads>4</max_threads>
+
+            <!-- запрет декартовых джойнов по недоразумению -->
+            <join_algorithm>hash</join_algorithm>
+            <max_bytes_in_join>2000000000</max_bytes_in_join>
+
+            <!--
+              Потолки. Клиент может менять настройку, но не выше max —
+              именно это возвращает гарантию, потерянную при переходе на
+              readonly=2. Сами readonly и allow_ddl объявлены неизменяемыми.
+            -->
+            <constraints>
+                <readonly>
+                    <readonly/>
+                </readonly>
+                <allow_ddl>
+                    <readonly/>
+                </allow_ddl>
+                <max_execution_time>
+                    <max>60</max>
+                </max_execution_time>
+                <max_result_rows>
+                    <max>100000</max>
+                </max_result_rows>
+                <max_result_bytes>
+                    <max>200000000</max>
+                </max_result_bytes>
+                <max_rows_to_read>
+                    <max>500000000</max>
+                </max_rows_to_read>
+                <max_bytes_to_read>
+                    <max>20000000000</max>
+                </max_bytes_to_read>
+                <max_memory_usage>
+                    <max>4000000000</max>
+                </max_memory_usage>
+            </constraints>
+        </dashboard_profile>
+    </profiles>
+
+    <!-- Квота и сам пользователь создаются через SQL (sql/70_users.sql):
+         RBAC-гранты нужны, чтобы закрыть слои raw и int, а это только SQL. -->
+</clickhouse>

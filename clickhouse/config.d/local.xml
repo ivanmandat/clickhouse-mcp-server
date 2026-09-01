@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<clickhouse>
+    <!-- Локальная среда: короче логи, живой query_log.
+         query_log нужен не для отладки, а для приоритизации семантического слоя —
+         по нему видно, какие таблицы реально используются. -->
+    <logger>
+        <level>information</level>
+    </logger>
+
+    <query_log>
+        <database>system</database>
+        <table>query_log</table>
+        <flush_interval_milliseconds>1000</flush_interval_milliseconds>
+        <ttl>event_date + INTERVAL 30 DAY DELETE</ttl>
+    </query_log>
+
+    <!-- на ноутбуке незачем держать большой кэш засечек -->
+    <mark_cache_size>536870912</mark_cache_size>
+</clickhouse>

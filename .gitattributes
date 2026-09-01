@@ -1,0 +1,17 @@
+# Нормализация окончаний строк в репозитории
+* text=auto
+
+# Скрипты для Linux ОБЯЗАНЫ оставаться с LF: с CRLF bash не находит
+# интерпретатор и падает с "bad interpreter: No such file or directory"
+*.sh text eol=lf
+
+# PowerShell-скриптам, наоборот, нужен CRLF и BOM: PowerShell 5.1 без BOM
+# читает файл как ANSI и ломает кириллицу
+*.ps1 text eol=crlf
+
+# SQL читается clickhouse-client внутри контейнера — только LF
+*.sql text eol=lf
+
+# бинарное
+*.png binary
+*.jpg binary

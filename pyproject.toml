@@ -1,0 +1,30 @@
+[project]
+name = "mcp-dwh"
+version = "0.1.0"
+description = "MCP-сервер для построения дашбордов и отчётов агентами поверх ClickHouse + Postgres"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=2.1,<3",
+    "clickhouse-connect>=0.8.0",
+    "psycopg[binary,pool]>=3.2",
+    "pydantic>=2.7",
+    "python-dotenv>=1.0",
+    "uvicorn>=0.30",
+]
+
+[project.scripts]
+mcp-dwh = "mcp_dwh.server:main"
+
+[dependency-groups]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.24"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mcp_dwh"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

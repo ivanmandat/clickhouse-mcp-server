@@ -1,0 +1,9 @@
+{
+  "_comment": "Локальный запуск MCP в режиме stdio. Замените путь на свой.",
+  "mcpServers": {
+    "mcp-dwh": {
+      "command": "./.venv/bin/mcp-dwh",
+      "args": []
+    }
+  }
+}

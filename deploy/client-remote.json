@@ -1,0 +1,11 @@
+{
+  "_comment": "Конфиг клиента для сервера заказчика. Подставьте адрес и токен.",
+  "mcpServers": {
+    "mcp-dwh": {
+      "url": "https://mcp.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ЗАМЕНИТЕ_НА_ТОКЕН"
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+# секреты локальной среды
+.env
+
+# сгенерированный из шаблона скрипт с подставленным паролём
+sql/.70_users.generated.sql
+
+# python
+.venv/
+__pycache__/
+*.pyc
+
+# node
+node_modules/
+
+# редакторы
+.vscode/
+.idea/
+
+# entrypoint ClickHouse пишет сюда пароль администратора открытым текстом
+clickhouse/users.d/default-user.xml
+
+# сгенерированные отчёты
+reports/
+
+# секреты: только на сервере, никогда в git
+secrets/

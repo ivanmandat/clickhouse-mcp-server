@@ -1,0 +1,872 @@
+<title>Живая схема</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@500;600;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #F7F8FA;
+  --surface: #FFFFFF;
+  --ink: #1C2128;
+  --muted: #5B6472;
+  --line: #D9DEE6;
+  --line-soft: #E7EBF0;
+  --ch: #C77E1A;
+  --ch-soft: #FBF3E3;
+  --pg: #3D6FA8;
+  --pg-soft: #EAF1F8;
+  --agent: #7A5FBF;
+  --agent-soft: #F1EDF9;
+  --ok: #3E8E5A;
+  --ok-soft: #E7F3EC;
+  --warn: #B4651E;
+  --warn-soft: #FAEFE3;
+  --crit: #B54545;
+  --crit-soft: #F9EAEA;
+  --draft: #6B7480;
+  --draft-soft: #EEF0F3;
+  --code-bg: #EEF1F5;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14171C;
+    --surface: #1D2229;
+    --ink: #E8EBF0;
+    --muted: #98A2B0;
+    --line: #333B47;
+    --line-soft: #2A313B;
+    --ch: #E8A94F;
+    --ch-soft: #2E2617;
+    --pg: #6FA3DC;
+    --pg-soft: #1A2736;
+    --agent: #A78FE0;
+    --agent-soft: #272033;
+    --ok: #61B683;
+    --ok-soft: #1B2C22;
+    --warn: #D98D48;
+    --warn-soft: #302315;
+    --crit: #D97070;
+    --crit-soft: #331D1D;
+    --draft: #8B95A3;
+    --draft-soft: #262C34;
+    --code-bg: #242A33;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14171C;
+  --surface: #1D2229;
+  --ink: #E8EBF0;
+  --muted: #98A2B0;
+  --line: #333B47;
+  --line-soft: #2A313B;
+  --ch: #E8A94F;
+  --ch-soft: #2E2617;
+  --pg: #6FA3DC;
+  --pg-soft: #1A2736;
+  --agent: #A78FE0;
+  --agent-soft: #272033;
+  --ok: #61B683;
+  --ok-soft: #1B2C22;
+  --warn: #D98D48;
+  --warn-soft: #302315;
+  --crit: #D97070;
+  --crit-soft: #331D1D;
+  --draft: #8B95A3;
+  --draft-soft: #262C34;
+  --code-bg: #242A33;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Golos Text", "Segoe UI", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  margin: 0;
+  padding: 0 24px 96px;
+}
+.wrap { max-width: 920px; margin: 0 auto; }
+header.hero { padding: 64px 0 12px; }
+.eyebrow {
+  font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+h1 {
+  font-family: "Onest", "Segoe UI", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(34px, 5vw, 48px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  text-wrap: balance;
+}
+.lede {
+  font-size: 18px;
+  color: var(--muted);
+  max-width: 640px;
+  margin: 0;
+}
+h2 {
+  font-family: "Onest", "Segoe UI", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: -0.01em;
+  margin: 72px 0 8px;
+  text-wrap: balance;
+}
+h3 {
+  font-family: "Onest", "Segoe UI", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  margin: 32px 0 8px;
+}
+p { margin: 12px 0; max-width: 700px; }
+p.section-lede { color: var(--muted); margin-top: 4px; }
+code {
+  font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: 0.86em;
+  background: var(--code-bg);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+figure {
+  margin: 28px 0;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  padding: 24px 20px 16px;
+  overflow-x: auto;
+}
+figure svg { display: block; min-width: 700px; max-width: 100%; height: auto; margin: 0 auto; }
+figcaption {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin-top: 14px;
+  text-align: center;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin: 18px 0 4px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.swatch { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+.sw-ch { background: var(--ch-soft); border: 1.5px solid var(--ch); }
+.sw-pg { background: var(--pg-soft); border: 1.5px solid var(--pg); }
+.sw-agent { background: var(--agent-soft); border: 1.5px solid var(--agent); }
+.sw-neutral { background: var(--surface); border: 1.5px solid var(--ink); }
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin: 24px 0;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+.card h4 {
+  font-family: "Onest", system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+.card p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
+.card .tools {
+  font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.9;
+  color: var(--ink);
+}
+.card .tools b { font-weight: 500; }
+
+table.spec {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14.5px;
+}
+table.spec th {
+  text-align: left;
+  font-family: "Onest", system-ui, sans-serif;
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 8px 14px 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+table.spec td {
+  padding: 10px 14px 10px 0;
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: top;
+}
+table.spec td:first-child { white-space: nowrap; }
+table.spec code { white-space: nowrap; }
+
+.pill {
+  display: inline-block;
+  font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.pill-draft { background: var(--draft-soft); color: var(--draft); }
+.pill-ok { background: var(--ok-soft); color: var(--ok); }
+.pill-warn { background: var(--warn-soft); color: var(--warn); }
+.pill-crit { background: var(--crit-soft); color: var(--crit); }
+
+ul.tight { max-width: 700px; padding-left: 22px; }
+ul.tight li { margin: 8px 0; }
+ul.tight li::marker { color: var(--muted); }
+
+.principle {
+  border-left: 3px solid var(--agent);
+  background: var(--surface);
+  border-radius: 0 10px 10px 0;
+  padding: 16px 22px;
+  margin: 24px 0;
+  max-width: 700px;
+}
+.principle p { margin: 0; }
+.principle .k {
+  font-family: "Onest", system-ui, sans-serif;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+footer {
+  margin-top: 80px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line-soft);
+  font-size: 13px;
+  color: var(--muted);
+}
+@media (prefers-reduced-motion: no-preference) {
+  header.hero { animation: rise 0.5s ease-out both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+}
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <p class="eyebrow">Архитектура · MCP · ClickHouse + Postgres · реализовано</p>
+  <h1>Живая схема</h1>
+  <p class="lede">MCP-сервер, который даёт агентам строить дашборды и отчёты по большой базе — и переживает изменения её структуры без правок кода: схема добывается на лету, семантика хранится отдельно и обновляется конвейером.</p>
+  <p class="lede" style="margin-top:12px">Схема реализована и проверена на смене предметной области целиком: хранилище переключили с продаж на репетиторство, продуктовый код не потребовал ни одной правки. Ниже отмечено, что работает, а что осталось направлением развития.</p>
+</header>
+
+<h2>Общая картина</h2>
+<p class="section-lede">Три зоны ответственности: агенты работают только через MCP-инструменты; ClickHouse хранит данные и отдаёт живую схему; Postgres хранит всё, что о данных знают люди и агенты.</p>
+
+<div class="legend">
+  <span><span class="swatch sw-agent"></span>Агенты и клиенты</span>
+  <span><span class="swatch sw-neutral"></span>MCP-сервер</span>
+  <span><span class="swatch sw-ch"></span>ClickHouse — данные</span>
+  <span><span class="swatch sw-pg"></span>Postgres — метаданные</span>
+</div>
+
+<figure>
+<svg viewBox="0 0 920 620" role="img" aria-label="Архитектура: агенты обращаются к MCP-серверу с пятью группами инструментов; сервер читает данные и схему из ClickHouse и читает-пишет метаданные в Postgres; фоновые процессы снимают снапшоты схемы и обогащают семантический слой" style="color: var(--ink)">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="currentColor"/>
+    </marker>
+    <marker id="arr-ch" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--ch)"/>
+    </marker>
+    <marker id="arr-pg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--pg)"/>
+    </marker>
+  </defs>
+
+  <!-- Agents column -->
+  <g font-family="Golos Text, sans-serif" font-size="13">
+    <rect x="20" y="60" width="180" height="86" rx="10" fill="var(--agent-soft)" stroke="var(--agent)" stroke-width="1.5"/>
+    <text x="110" y="88" text-anchor="middle" font-weight="600" fill="currentColor" font-size="14">Агент-аналитик</text>
+    <text x="110" y="108" text-anchor="middle" fill="var(--muted)" font-size="12">Claude / Claude Code</text>
+    <text x="110" y="126" text-anchor="middle" fill="var(--muted)" font-size="12">строит дашборды и отчёты</text>
+
+    <rect x="20" y="170" width="180" height="70" rx="10" fill="var(--agent-soft)" stroke="var(--agent)" stroke-width="1.5"/>
+    <text x="110" y="198" text-anchor="middle" font-weight="600" fill="currentColor" font-size="14">Агент-куратор</text>
+    <text x="110" y="218" text-anchor="middle" fill="var(--muted)" font-size="12">обогащает семантику</text>
+
+    <rect x="20" y="264" width="180" height="70" rx="10" fill="var(--agent-soft)" stroke="var(--agent)" stroke-width="1.5"/>
+    <text x="110" y="292" text-anchor="middle" font-weight="600" fill="currentColor" font-size="14">Человек</text>
+    <text x="110" y="312" text-anchor="middle" fill="var(--muted)" font-size="12">ревью через чат / UI</text>
+  </g>
+
+  <!-- Render layer -->
+  <g font-family="Golos Text, sans-serif" font-size="13">
+    <rect x="20" y="368" width="180" height="96" rx="10" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"/>
+    <text x="110" y="394" text-anchor="middle" font-weight="600" fill="currentColor">Слой визуализации</text>
+    <text x="110" y="415" text-anchor="middle" font-size="12" fill="var(--muted)">Grafana — живые дашборды</text>
+    <text x="110" y="433" text-anchor="middle" font-size="12" fill="var(--muted)">HTML — отчёты-срезы</text>
+    <text x="110" y="452" text-anchor="middle" font-size="11.5" fill="var(--muted)">проекция, не источник правды</text>
+  </g>
+  <line x1="284" y1="349" x2="204" y2="398" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#arr)"/>
+  <text x="242" y="342" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="var(--muted)">рендер спека</text>
+
+  <!-- MCP protocol arrows -->
+  <g stroke="currentColor" stroke-width="1.4" fill="none">
+    <line x1="200" y1="103" x2="280" y2="150" marker-end="url(#arr)"/>
+    <line x1="200" y1="205" x2="280" y2="205" marker-end="url(#arr)"/>
+    <line x1="200" y1="299" x2="280" y2="260" marker-end="url(#arr)"/>
+  </g>
+  <text x="240" y="192" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--muted)">MCP</text>
+
+  <!-- MCP server -->
+  <g font-family="Golos Text, sans-serif">
+    <rect x="284" y="40" width="330" height="420" rx="12" fill="var(--surface)" stroke="currentColor" stroke-width="1.6"/>
+    <text x="449" y="70" text-anchor="middle" font-weight="600" font-size="15" fill="currentColor" font-family="Onest, sans-serif">MCP-сервер</text>
+
+    <!-- tool groups -->
+    <g font-family="JetBrains Mono, monospace" font-size="11">
+      <rect x="304" y="88" width="290" height="66" rx="8" fill="none" stroke="var(--line)" stroke-width="1.2"/>
+      <text x="316" y="108" font-family="Golos Text, sans-serif" font-size="12.5" font-weight="600" fill="currentColor">Интроспекция схемы</text>
+      <text x="316" y="126" fill="var(--muted)">search_tables · describe_table</text>
+      <text x="316" y="142" fill="var(--muted)">sample_data · profile_column</text>
+
+      <rect x="304" y="164" width="290" height="66" rx="8" fill="none" stroke="var(--line)" stroke-width="1.2"/>
+      <text x="316" y="184" font-family="Golos Text, sans-serif" font-size="12.5" font-weight="600" fill="currentColor">Семантический слой</text>
+      <text x="316" y="202" fill="var(--muted)">search_metrics · get_relations</text>
+      <text x="316" y="218" fill="var(--muted)">suggest_semantic_update</text>
+
+      <rect x="304" y="240" width="290" height="66" rx="8" fill="none" stroke="var(--line)" stroke-width="1.2"/>
+      <text x="316" y="260" font-family="Golos Text, sans-serif" font-size="12.5" font-weight="600" fill="currentColor">Выполнение запросов</text>
+      <text x="316" y="278" fill="var(--muted)">run_query (read-only, лимиты)</text>
+      <text x="316" y="294" fill="var(--muted)">validate_query (EXPLAIN)</text>
+
+      <rect x="304" y="316" width="290" height="66" rx="8" fill="none" stroke="var(--line)" stroke-width="1.2"/>
+      <text x="316" y="336" font-family="Golos Text, sans-serif" font-size="12.5" font-weight="600" fill="currentColor">Дашборды и отчёты</text>
+      <text x="316" y="354" fill="var(--muted)">save_dashboard · render_dashboard</text>
+      <text x="316" y="370" fill="var(--muted)">render_report · list_broken_dashboards</text>
+
+      <rect x="304" y="392" width="290" height="50" rx="8" fill="none" stroke="var(--line)" stroke-width="1.2" stroke-dasharray="5 4"/>
+      <text x="316" y="412" font-family="Golos Text, sans-serif" font-size="12.5" font-weight="600" fill="currentColor">Курирование</text>
+      <text x="316" y="430" fill="var(--muted)">update_semantic_entry · review_queue</text>
+    </g>
+  </g>
+
+  <!-- ClickHouse -->
+  <g font-family="Golos Text, sans-serif">
+    <rect x="700" y="40" width="200" height="200" rx="12" fill="var(--ch-soft)" stroke="var(--ch)" stroke-width="1.6"/>
+    <text x="800" y="70" text-anchor="middle" font-weight="600" font-size="15" fill="currentColor" font-family="Onest, sans-serif">ClickHouse</text>
+    <text x="800" y="90" text-anchor="middle" font-size="12" fill="var(--muted)">данные · большие, живые</text>
+    <g font-family="JetBrains Mono, monospace" font-size="11" fill="currentColor">
+      <text x="716" y="120">факты и агрегаты</text>
+      <text x="716" y="142">system.tables</text>
+      <text x="716" y="160">system.columns</text>
+      <text x="716" y="178">system.query_log</text>
+    </g>
+    <text x="716" y="210" font-size="11.5" fill="var(--muted)">readonly-пользователь,</text>
+    <text x="716" y="226" font-size="11.5" fill="var(--muted)">квоты и таймауты</text>
+  </g>
+
+  <!-- Postgres -->
+  <g font-family="Golos Text, sans-serif">
+    <rect x="700" y="270" width="200" height="212" rx="12" fill="var(--pg-soft)" stroke="var(--pg)" stroke-width="1.6"/>
+    <text x="800" y="300" text-anchor="middle" font-weight="600" font-size="15" fill="currentColor" font-family="Onest, sans-serif">Postgres</text>
+    <text x="800" y="320" text-anchor="middle" font-size="12" fill="var(--muted)">метаданные · источник смысла</text>
+    <g font-family="JetBrains Mono, monospace" font-size="11" fill="currentColor">
+      <text x="716" y="350">sem_tables · sem_columns</text>
+      <text x="716" y="368">sem_metrics</text>
+      <text x="716" y="386">sem_relations</text>
+      <text x="716" y="404">dashboards</text>
+      <text x="716" y="422">schema_snapshots</text>
+    </g>
+    <text x="716" y="452" font-size="11.5" fill="var(--muted)">версии, origin, status</text>
+  </g>
+
+  <!-- Server <-> DB arrows -->
+  <g fill="none" stroke-width="1.5">
+    <line x1="614" y1="120" x2="700" y2="120" stroke="var(--ch)" marker-end="url(#arr-ch)"/>
+    <line x1="614" y1="273" x2="700" y2="180" stroke="var(--ch)" marker-end="url(#arr-ch)"/>
+    <line x1="614" y1="196" x2="700" y2="330" stroke="var(--pg)" marker-end="url(#arr-pg)" marker-start="url(#arr-pg)"/>
+    <line x1="614" y1="349" x2="700" y2="380" stroke="var(--pg)" marker-end="url(#arr-pg)" marker-start="url(#arr-pg)"/>
+  </g>
+  <g font-family="JetBrains Mono, monospace" font-size="10.5" fill="var(--muted)">
+    <text x="657" y="110" text-anchor="middle">интроспекция</text>
+    <text x="670" y="245" text-anchor="middle">SELECT</text>
+    <text x="641" y="285" text-anchor="middle">метрики</text>
+    <text x="650" y="382" text-anchor="middle">дашборды</text>
+  </g>
+
+  <!-- Background workers -->
+  <g font-family="Golos Text, sans-serif">
+    <rect x="284" y="500" width="616" height="92" rx="12" fill="var(--surface)" stroke="currentColor" stroke-width="1.4" stroke-dasharray="6 4"/>
+    <text x="300" y="526" font-weight="600" font-size="13.5" fill="currentColor" font-family="Onest, sans-serif">Фоновые процессы (cron)</text>
+    <g font-size="12" fill="var(--muted)">
+      <text x="300" y="548">снапшот схемы → дифф → черновики семантики → автообогащение агентом</text>
+      <text x="300" y="568">dry-run сохранённых дашбордов → список сломанных</text>
+    </g>
+  </g>
+  <g fill="none" stroke-width="1.4">
+    <path d="M 760 240 L 760 254 L 660 254 L 660 500" stroke="var(--ch)" marker-end="url(#arr-ch)"/>
+    <line x1="830" y1="500" x2="830" y2="482" stroke="var(--pg)" marker-end="url(#arr-pg)"/>
+  </g>
+  <text x="672" y="492" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10.5" fill="var(--muted)">читает схему</text>
+  <text x="838" y="494" text-anchor="start" font-family="JetBrains Mono, monospace" font-size="10.5" fill="var(--muted)">пишет метаданные</text>
+</svg>
+<figcaption>Агенты никогда не ходят в базы напрямую — только через инструменты MCP. Схема ClickHouse читается на лету, семантика живёт в Postgres.</figcaption>
+</figure>
+
+<div class="principle">
+  <p><span class="k">Ключевой принцип: схема — это инструмент, а не контекст.</span>
+  Схема большой базы не вкладывается в промпт — агент добывает её сам через инструменты интроспекции, каждый раз актуальную. Поэтому добавление таблиц и колонок не требует ни правок MCP, ни обновления промптов: меняется только то, что агент увидит при следующем вызове <code>search_tables</code>.</p>
+</div>
+
+<h2>Группы инструментов</h2>
+<p class="section-lede">Шесть групп, 30 инструментов. Имена приведены как в коде.</p>
+
+<div class="cards">
+  <div class="card">
+    <h4>Интроспекция схемы</h4>
+    <p>Живая правда о структуре — из <code>system.tables</code> и <code>system.columns</code>, с пагинацией и поиском вместо полного списка.</p>
+    <div class="tools">ch_search_tables<br>ch_describe_table<br>ch_sample_data<br>ch_profile_column</div>
+  </div>
+  <div class="card">
+    <h4>Семантический слой</h4>
+    <p>Что данные значат: описания, метрики, join-графы. Отдаётся тоже инструментами, не промптом.</p>
+    <div class="tools">sem_search_metrics<br>sem_get_metric<br>sem_compile_metric<br>sem_get_table_info<br>sem_get_relations<br>sem_suggest_update<br>sem_review_queue</div>
+  </div>
+  <div class="card">
+    <h4>Выполнение запросов</h4>
+    <p>Строго read-only, с принудительным лимитом строк. Проверка — обёрткой <code>SELECT * FROM (...) LIMIT 0</code>, а не EXPLAIN: последний пропускает несуществующую колонку.</p>
+    <div class="tools">ch_run_query<br>ch_validate_query</div>
+  </div>
+  <div class="card">
+    <h4>Дашборды и отчёты</h4>
+    <p>Декларативные артефакты: виджеты + SQL или ссылки на метрики. Хранятся в Postgres, оттуда пушатся в рендерер.</p>
+    <div class="tools">dash_save · dash_get · dash_list<br>dash_set_maintenance<br>dash_validate · dash_validate_all<br>dash_list_broken<br>dash_unmaintain_candidates<br>dash_metric_impact<br>dash_publish · dash_unpublish<br>dash_preview_grafana<br>report_render</div>
+  </div>
+  <div class="card">
+    <h4>Отслеживание схемы</h4>
+    <p>Снимки схемы, дифф и реакция на изменения: новое получает черновики, пропавшее — статус orphaned.</p>
+    <div class="tools">schema_snapshot<br>schema_diff<br>schema_apply_changes</div>
+  </div>
+  <div class="card">
+    <h4>Диагностика</h4>
+    <p>Проверка связи со всеми тремя системами и снимок настроек без секретов. Вызывается первой при ошибках подключения.</p>
+    <div class="tools">mcp_diagnostics</div>
+  </div>
+</div>
+
+<h2>Семантический слой в Postgres</h2>
+<p class="section-lede">Хранится поверх физической схемы, а не вместо неё: рассинхрон не ломает работу, а становится видимым.</p>
+
+<table class="spec">
+  <thead><tr><th>Таблица</th><th>Что хранит</th></tr></thead>
+  <tbody>
+    <tr><td><code>sem_tables</code></td><td>Описания таблиц, заметки об использовании («сырые данные, для отчётов бери <code>*_agg</code>»)</td></tr>
+    <tr><td><code>sem_columns</code></td><td>Описания колонок + <code>value_hints</code>: top-N значений, форматы, «<code>'ACTIVE'</code>, не <code>'active'</code>»</td></tr>
+    <tr><td><code>sem_metrics</code></td><td>Канонические определения метрик: SQL-шаблон, базовая таблица, доступные измерения. Чтобы «выручка» считалась одинаково во всех дашбордах</td></tr>
+    <tr><td><code>sem_relations</code></td><td>Join-граф: в ClickHouse нет foreign keys — это единственное место, где агент узнаёт, как джойнить</td></tr>
+    <tr><td><code>dashboards</code></td><td>Декларативные спеки дашбордов с версионированием</td></tr>
+    <tr><td><code>schema_snapshots</code></td><td>Периодические слепки <code>system.columns</code> (jsonb) — фундамент диффов</td></tr>
+  </tbody>
+</table>
+
+<p>У каждой семантической записи два служебных поля, на которых держится вся система: <strong><code>origin</code></strong> — кто написал (<code>auto</code> / <code>agent_suggested</code> / <code>human</code>), и <strong><code>status</code></strong> — насколько записи можно верить. Автоматика никогда не перезаписывает <code>origin = 'human'</code>, а агент при генерации запросов доверяет записям по-разному: верифицированная метрика — истина, авто-черновик — подсказка.</p>
+
+<figure>
+<svg viewBox="0 0 860 250" role="img" aria-label="Жизненный цикл статуса семантической записи: новая сущность создаёт draft, ревью переводит в verified, изменение схемы делает stale, удаление сущности — orphaned" style="color: var(--ink)">
+  <defs>
+    <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="currentColor"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace" font-size="13" font-weight="500">
+    <rect x="40" y="70" width="150" height="46" rx="23" fill="var(--draft-soft)"/>
+    <text x="115" y="98" text-anchor="middle" fill="var(--draft)">draft</text>
+
+    <rect x="330" y="70" width="170" height="46" rx="23" fill="var(--ok-soft)"/>
+    <text x="415" y="98" text-anchor="middle" fill="var(--ok)">verified</text>
+
+    <rect x="650" y="30" width="150" height="46" rx="23" fill="var(--warn-soft)"/>
+    <text x="725" y="58" text-anchor="middle" fill="var(--warn)">stale</text>
+
+    <rect x="650" y="150" width="150" height="46" rx="23" fill="var(--crit-soft)"/>
+    <text x="725" y="178" text-anchor="middle" fill="var(--crit)">orphaned</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.4" fill="none">
+    <line x1="190" y1="93" x2="330" y2="93" marker-end="url(#arr2)"/>
+    <line x1="500" y1="82" x2="650" y2="60" marker-end="url(#arr2)"/>
+    <path d="M 660 76 C 590 110 560 108 504 100" marker-end="url(#arr2)"/>
+    <line x1="500" y1="106" x2="650" y2="165" marker-end="url(#arr2)"/>
+  </g>
+  <g font-family="Golos Text, sans-serif" font-size="12" fill="var(--muted)">
+    <text x="260" y="82" text-anchor="middle">ревью человеком</text>
+    <text x="575" y="52" text-anchor="middle">схема сущности изменилась</text>
+    <text x="585" y="128" text-anchor="middle">повторное ревью</text>
+    <text x="560" y="158" text-anchor="middle">сущность удалена из БД</text>
+    <text x="115" y="140" text-anchor="middle">новая сущность в диффе</text>
+    <text x="725" y="216" text-anchor="middle">не удаляется: на ней видно,</text>
+    <text x="725" y="232" text-anchor="middle">какие метрики и дашборды сломались</text>
+  </g>
+  <line x1="115" y1="116" x2="115" y2="126" stroke="none"/>
+</svg>
+<figcaption>Жизненный цикл поля <code>status</code>. Записи не удаляются вслед за сущностями — <code>orphaned</code>-запись показывает, что именно сломалось.</figcaption>
+</figure>
+
+<h2>Конвейер обновления при изменении схемы</h2>
+<p class="section-lede">Три шага; человек участвует только в последнем — и то опционально. На каждом уровне система остаётся рабочей: деградирует качество подсказок, а не функциональность.</p>
+
+<figure>
+<svg viewBox="0 0 920 420" role="img" aria-label="Конвейер: cron снимает снапшот схемы ClickHouse, дифф порождает события, по ним создаются черновики в Postgres, агент автообогащает их, очередь ревью ведёт к verified; отдельная ветка — orphaned-записи ведут к списку сломанных дашбордов и агенту-починщику" style="color: var(--ink)">
+  <defs>
+    <marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="currentColor"/>
+    </marker>
+  </defs>
+
+  <!-- step labels -->
+  <g font-family="Onest, sans-serif" font-size="12" font-weight="600" fill="var(--muted)" letter-spacing="1">
+    <text x="150" y="30">ШАГ 1 · ОБНАРУЖЕНИЕ</text>
+    <text x="470" y="30">ШАГ 2 · АВТООБОГАЩЕНИЕ</text>
+    <text x="726" y="30">ШАГ 3 · КУРИРОВАНИЕ</text>
+  </g>
+
+  <g font-family="Golos Text, sans-serif" font-size="13">
+    <!-- snapshot -->
+    <rect x="20" y="50" width="180" height="76" rx="10" fill="var(--ch-soft)" stroke="var(--ch)" stroke-width="1.5"/>
+    <text x="110" y="78" text-anchor="middle" font-weight="600" fill="currentColor">Снапшот схемы</text>
+    <text x="110" y="98" text-anchor="middle" font-size="12" fill="var(--muted)">system.columns, cron</text>
+    <text x="110" y="114" text-anchor="middle" font-size="12" fill="var(--muted)">дифф с предыдущим</text>
+
+    <!-- events -->
+    <rect x="250" y="50" width="180" height="106" rx="10" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"/>
+    <text x="340" y="76" text-anchor="middle" font-weight="600" fill="currentColor">События диффа</text>
+    <g font-family="JetBrains Mono, monospace" font-size="11" fill="var(--muted)">
+      <text x="340" y="98" text-anchor="middle">table_added</text>
+      <text x="340" y="115" text-anchor="middle">column_added / renamed?</text>
+      <text x="340" y="132" text-anchor="middle">table_dropped</text>
+    </g>
+
+    <!-- drafts -->
+    <rect x="480" y="50" width="180" height="76" rx="10" fill="var(--pg-soft)" stroke="var(--pg)" stroke-width="1.5"/>
+    <text x="570" y="78" text-anchor="middle" font-weight="600" fill="currentColor">Черновики в sem_*</text>
+    <text x="570" y="98" text-anchor="middle" font-size="12" fill="var(--muted)">status = draft</text>
+    <text x="570" y="114" text-anchor="middle" font-size="12" fill="var(--muted)">описание пустое</text>
+
+    <!-- agent enrich -->
+    <rect x="480" y="180" width="180" height="92" rx="10" fill="var(--agent-soft)" stroke="var(--agent)" stroke-width="1.5"/>
+    <text x="570" y="208" text-anchor="middle" font-weight="600" fill="currentColor">Агент-обогатитель</text>
+    <text x="570" y="228" text-anchor="middle" font-size="12" fill="var(--muted)">имя, типы, sample_data,</text>
+    <text x="570" y="244" text-anchor="middle" font-size="12" fill="var(--muted)">похожие таблицы →</text>
+    <text x="570" y="260" text-anchor="middle" font-size="12" fill="var(--muted)">черновик описания</text>
+
+    <!-- review queue -->
+    <rect x="720" y="50" width="180" height="92" rx="10" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"/>
+    <text x="810" y="78" text-anchor="middle" font-weight="600" fill="currentColor">Очередь ревью</text>
+    <text x="810" y="98" text-anchor="middle" font-size="12" fill="var(--muted)">draft и stale, приоритет</text>
+    <text x="810" y="114" text-anchor="middle" font-size="12" fill="var(--muted)">по частоте использования</text>
+    <text x="810" y="130" text-anchor="middle" font-size="12" fill="var(--muted)">из system.query_log</text>
+
+    <!-- verified -->
+    <rect x="720" y="180" width="180" height="50" rx="10" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="1.5"/>
+    <text x="810" y="210" text-anchor="middle" font-weight="600" fill="var(--ok)" font-family="JetBrains Mono, monospace" font-size="13">→ verified</text>
+
+    <!-- orphaned branch -->
+    <rect x="250" y="200" width="180" height="76" rx="10" fill="var(--crit-soft)" stroke="var(--crit)" stroke-width="1.5"/>
+    <text x="340" y="228" text-anchor="middle" font-weight="600" fill="currentColor">Пропавшие сущности</text>
+    <text x="340" y="248" text-anchor="middle" font-size="12" fill="var(--muted)">записи → orphaned,</text>
+    <text x="340" y="264" text-anchor="middle" font-size="12" fill="var(--muted)">метрики → stale</text>
+
+    <rect x="250" y="316" width="180" height="76" rx="10" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"/>
+    <text x="340" y="344" text-anchor="middle" font-weight="600" fill="currentColor">Сломанные дашборды</text>
+    <text x="340" y="364" text-anchor="middle" font-size="12" fill="var(--muted)">dry-run всех сохранённых</text>
+    <text x="340" y="380" text-anchor="middle" font-size="12" fill="var(--muted)">запросов → список с ошибками</text>
+
+    <rect x="480" y="316" width="180" height="76" rx="10" fill="var(--agent-soft)" stroke="var(--agent)" stroke-width="1.5"/>
+    <text x="570" y="344" text-anchor="middle" font-weight="600" fill="currentColor">Агент-починщик</text>
+    <text x="570" y="364" text-anchor="middle" font-size="12" fill="var(--muted)">ошибка + новая схема →</text>
+    <text x="570" y="380" text-anchor="middle" font-size="12" fill="var(--muted)">правка SQL, self-healing</text>
+  </g>
+
+  <!-- arrows -->
+  <g stroke="currentColor" stroke-width="1.4" fill="none">
+    <line x1="200" y1="88" x2="250" y2="88" marker-end="url(#arr3)"/>
+    <line x1="430" y1="88" x2="480" y2="88" marker-end="url(#arr3)"/>
+    <line x1="570" y1="126" x2="570" y2="180" marker-end="url(#arr3)"/>
+    <line x1="660" y1="210" x2="720" y2="120" marker-end="url(#arr3)"/>
+    <line x1="810" y1="142" x2="810" y2="180" marker-end="url(#arr3)"/>
+    <line x1="340" y1="156" x2="340" y2="200" marker-end="url(#arr3)"/>
+    <line x1="340" y1="276" x2="340" y2="316" marker-end="url(#arr3)"/>
+    <line x1="430" y1="354" x2="480" y2="354" marker-end="url(#arr3)"/>
+  </g>
+  <g font-family="Golos Text, sans-serif" font-size="11.5" fill="var(--muted)">
+    <text x="588" y="158">origin = auto</text>
+    <text x="700" y="170" text-anchor="middle">в очередь</text>
+    <text x="822" y="166">человек</text>
+    <text x="348" y="182">dropped</text>
+    <text x="348" y="302">валидация</text>
+  </g>
+</svg>
+<figcaption>Дифф схемы → черновики от агента → очередь ревью. Новая сущность получает черновую семантику в течение часа после появления в базе; удалённая — превращается в явный список сломанных дашбордов и задачу для агента-починщика.</figcaption>
+</figure>
+
+<h3>Почему это переживает любые миграции</h3>
+<ul class="tight">
+  <li><strong>Новые таблицы и колонки</strong> видны агенту сразу через интроспекцию — семантика догоняет асинхронно, помеченная как черновик.</li>
+  <li><strong>Ломаются не агенты, а сохранённые запросы</strong> — дашборды. Фоновый dry-run находит их раньше пользователей, а агент чинит их по ошибке и актуальной схеме: «колонка <code>revenue</code> переименована в <code>gross_revenue</code> — обновить запрос?»</li>
+  <li><strong>Семантика пополняется как побочный эффект работы</strong>: агент-аналитик, выяснив что-то новое о данных, пишет это через <code>suggest_semantic_update</code> с <code>origin = 'agent_suggested'</code>.</li>
+</ul>
+
+<h2>Слой визуализации: две ветки</h2>
+<p class="section-lede">Готовый BI-инструмент из коробки — но строго как проекция. И отдельная ветка для отчётов, которым BI не нужен вовсе.</p>
+
+<div class="principle">
+  <p><span class="k">Спек — источник правды, BI-инструмент — одноразовая проекция.</span>
+  Superset и Grafana тащат собственную модель метаданных: датасеты, метрики, панели. Если дашборд «живёт» внутри них, появляется второй источник правды рядом с <code>sem_metrics</code>, и петля валидации из предыдущего раздела рвётся — фоновый процесс не может продиагностировать то, что лежит в чужой базе в чужом формате. Поэтому push односторонний, а валидатор читает спек, а не BI-инструмент.</p>
+</div>
+
+<figure>
+<svg viewBox="0 0 920 450" role="img" aria-label="Слой визуализации: канонический спек в Postgres расходится на две ветки — адаптер рендера пушит дашборд в Grafana или другой BI, который сам запрашивает ClickHouse; вторая ветка — агент рендерит самодостаточный HTML-отчёт с вшитыми данными. Правки внутри BI-интерфейса не возвращаются в спек, валидатор читает спек." style="color: var(--ink)">
+  <defs>
+    <marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="currentColor"/>
+    </marker>
+    <marker id="arr4-crit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--crit)"/>
+    </marker>
+  </defs>
+
+  <g font-family="Onest, sans-serif" font-size="12" font-weight="600" fill="var(--muted)" letter-spacing="1">
+    <text x="250" y="28">ВЕТКА A · ЖИВЫЕ ДАШБОРДЫ</text>
+    <text x="250" y="284">ВЕТКА B · ОТЧЁТЫ-СРЕЗЫ</text>
+  </g>
+
+  <g font-family="Golos Text, sans-serif" font-size="13">
+    <!-- canonical spec -->
+    <rect x="26" y="150" width="180" height="104" rx="10" fill="var(--pg-soft)" stroke="var(--pg)" stroke-width="1.8"/>
+    <text x="116" y="178" text-anchor="middle" font-weight="600" fill="currentColor">Спек дашборда</text>
+    <text x="116" y="199" text-anchor="middle" font-size="12" fill="var(--muted)">таблица dashboards</text>
+    <text x="116" y="216" text-anchor="middle" font-size="12" fill="var(--muted)">в Postgres, версионируется</text>
+    <text x="116" y="240" text-anchor="middle" font-size="12" font-weight="600" fill="var(--pg)">источник правды</text>
+
+    <!-- validator -->
+    <rect x="26" y="330" width="180" height="86" rx="10" fill="var(--surface)" stroke="currentColor" stroke-width="1.4" stroke-dasharray="6 4"/>
+    <text x="116" y="357" text-anchor="middle" font-weight="600" fill="currentColor">Валидатор</text>
+    <text x="116" y="377" text-anchor="middle" font-size="12" fill="var(--muted)">dry-run запросов</text>
+    <text x="116" y="394" text-anchor="middle" font-size="12" fill="var(--muted)">из спека, не из BI</text>
+
+    <!-- branch A: adapter -->
+    <rect x="256" y="46" width="170" height="90" rx="10" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"/>
+    <text x="341" y="74" text-anchor="middle" font-weight="600" fill="currentColor">Адаптер рендера</text>
+    <text x="341" y="95" text-anchor="middle" font-size="12" fill="var(--muted)">push(spec) → url</text>
+    <text x="341" y="113" text-anchor="middle" font-size="12" fill="var(--muted)">идемпотентно по uid</text>
+
+    <!-- branch A: targets -->
+    <rect x="496" y="34" width="196" height="116" rx="10" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"/>
+    <text x="594" y="58" text-anchor="middle" font-weight="600" fill="currentColor">Таргеты</text>
+    <rect x="510" y="68" width="168" height="24" rx="6" fill="var(--ok-soft)"/>
+    <text x="594" y="85" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ok)">Grafana — по умолчанию</text>
+    <text x="594" y="110" text-anchor="middle" font-size="12" fill="var(--muted)">Superset · Metabase</text>
+    <text x="594" y="128" text-anchor="middle" font-size="12" fill="var(--muted)">свой React-рендерер</text>
+
+    <!-- ClickHouse -->
+    <rect x="754" y="150" width="140" height="104" rx="10" fill="var(--ch-soft)" stroke="var(--ch)" stroke-width="1.5"/>
+    <text x="824" y="182" text-anchor="middle" font-weight="600" fill="currentColor">ClickHouse</text>
+    <text x="824" y="204" text-anchor="middle" font-size="12" fill="var(--muted)">данные</text>
+
+    <!-- branch B: reporter -->
+    <rect x="256" y="300" width="170" height="90" rx="10" fill="var(--agent-soft)" stroke="var(--agent)" stroke-width="1.5"/>
+    <text x="341" y="328" text-anchor="middle" font-weight="600" fill="currentColor">Агент-репортёр</text>
+    <text x="341" y="349" text-anchor="middle" font-size="12" fill="var(--muted)">run_query → данные</text>
+    <text x="341" y="367" text-anchor="middle" font-size="12" fill="var(--muted)">+ текст и выводы</text>
+
+    <!-- branch B: output -->
+    <rect x="496" y="300" width="196" height="90" rx="10" fill="var(--surface)" stroke="currentColor" stroke-width="1.4"/>
+    <text x="594" y="328" text-anchor="middle" font-weight="600" fill="currentColor">Самодостаточный HTML</text>
+    <text x="594" y="349" text-anchor="middle" font-size="12" fill="var(--muted)">данные вшиты в файл,</text>
+    <text x="594" y="367" text-anchor="middle" font-size="12" fill="var(--muted)">заморожены на момент</text>
+  </g>
+
+  <!-- flow arrows -->
+  <g stroke="currentColor" stroke-width="1.5" fill="none">
+    <path d="M 206 178 C 228 172, 236 120, 254 100" marker-end="url(#arr4)"/>
+    <path d="M 206 228 C 228 240, 236 316, 254 336" marker-end="url(#arr4)"/>
+    <line x1="426" y1="92" x2="494" y2="92" marker-end="url(#arr4)"/>
+    <line x1="426" y1="345" x2="494" y2="345" marker-end="url(#arr4)"/>
+    <path d="M 692 108 C 730 120, 740 150, 782 148" marker-end="url(#arr4)"/>
+    <path d="M 116 330 L 116 258" marker-end="url(#arr4)"/>
+  </g>
+  <g font-family="Golos Text, sans-serif" font-size="11.5" fill="var(--muted)">
+    <text x="460" y="82" text-anchor="middle">push</text>
+    <text x="460" y="335" text-anchor="middle">рендер</text>
+    <text x="708" y="76" text-anchor="start">запрашивает сам,</text>
+    <text x="708" y="92" text-anchor="start">данные живые</text>
+    <text x="130" y="300" text-anchor="start">читает</text>
+  </g>
+
+  <!-- one-way constraint -->
+  <g>
+    <path d="M 520 152 C 460 210, 320 214, 214 206" stroke="var(--crit)" stroke-width="1.4" fill="none" stroke-dasharray="6 4" marker-end="url(#arr4-crit)"/>
+    <g stroke="var(--crit)" stroke-width="2">
+      <line x1="382" y1="204" x2="398" y2="220"/>
+      <line x1="398" y1="204" x2="382" y2="220"/>
+    </g>
+  </g>
+  <text x="390" y="248" text-anchor="middle" font-family="Golos Text, sans-serif" font-size="12" fill="var(--crit)">правки внутри UI не возвращаются в спек</text>
+</svg>
+<figcaption>Ветка A отдаёт живой дашборд, который сам ходит в ClickHouse; ветка B отдаёт замороженный файл. Обратной синхронизации нет — это то, что сохраняет петлю валидации работоспособной.</figcaption>
+</figure>
+
+<h3>Выбор таргета</h3>
+<p>Ось, по которой стоит выбирать, — не «что красивее», а <strong>что легко сгенерировать программно и что можно прочитать обратно</strong> для валидации.</p>
+
+<table class="spec">
+  <thead><tr><th>Таргет</th><th>Генерация из спека</th><th>SQL для валидации</th><th>Лицензия</th><th>Эстетика</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="pill pill-ok">Grafana</span></td>
+      <td>Один JSON, upsert по <code>uid</code></td>
+      <td><code>rawSql</code> прямо в панели</td>
+      <td>AGPLv3</td>
+      <td>Мониторинг, ops</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-draft">Superset</span></td>
+      <td>Dataset → chart → <code>position_json</code>, форма <code>params</code> своя у каждого типа</td>
+      <td>Размазан по объектам</td>
+      <td>Apache 2.0</td>
+      <td>Классический BI</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-draft">Metabase</span></td>
+      <td>Карточки на сетке, API проще суперсетовского</td>
+      <td>Native question = сырой SQL</td>
+      <td>AGPLv3</td>
+      <td>Опрятный BI</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-draft">Свой рендерер</span></td>
+      <td>Тривиально — спек и есть модель</td>
+      <td>Спек и есть SQL</td>
+      <td>—</td>
+      <td>Под ваш продукт</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>По умолчанию — Grafana</strong>, именно потому что дашборд заливается одним объектом и его SQL прозрачен для фонового dry-run: это замыкает петлю самопочинки. Бонусом бесплатно достаются алерты, права, шаринг, embed и официальный плагин ClickHouse. Честная оговорка: Grafana выглядит как мониторинг — если аудитория бизнесовая, Superset и Metabase субъективно ближе к ожиданиям. И если продукт коммерческий со встраиванием, разница между AGPLv3 и Apache 2.0 может перевесить всё удобство API — это стоит выяснить до выбора, а не после.</p>
+
+<p>Поэтому таргет прячется за адаптером с интерфейсом <code>push(spec) → url</code>. Смена рендерера тогда — контейнированное изменение на один модуль, а не переписывание сервера.</p>
+
+<p style="padding:14px 18px;background:var(--surface);border:1px solid var(--line-soft);border-radius:10px;font-size:14.5px;">
+→ Формат самого спека — что умеет выразить адаптер и что читает валидатор — разобран отдельно:
+<a href="https://claude.ai/code/artifact/20168c39-e1ae-4c66-af47-a4b1473b8ea1" style="color:var(--pg);text-decoration:none;border-bottom:1px solid var(--line);">Спек дашборда, версия 1</a>.
+</p>
+
+<h3>Почему отчёты — отдельная ветка</h3>
+<p>Дашборд и отчёт — разные продукты, и попытка выдать второе первым обычно выходит боком:</p>
+<ul class="tight">
+  <li><strong>Дашборд</strong> живой и параметризованный, перезапрашивает данные при каждом открытии — это работа для BI-инструмента.</li>
+  <li><strong>Отчёт</strong> — срез на момент времени с текстом и выводами, который отправляют в мессенджер или прикладывают к письму. Здесь BI не нужен и скорее мешает: агент генерирует самодостаточный HTML со вшитыми данными, и файл остаётся читаемым через полгода, когда таблица уже переименована.</li>
+</ul>
+<p>Для отчётной ветки, если захочется большей системности, стоит посмотреть на code-first инструменты вроде Evidence — там страница описывается markdown-ом с SQL внутри, что для агента идеальный формат генерации и естественно ложится в git.</p>
+
+<h2>Безопасность</h2>
+<p class="section-lede">Агент генерирует SQL — значит, ограничения ставятся на уровне сервера БД, а не парсинга запросов.</p>
+<ul class="tight">
+  <li><strong>Гранты кодируют слоистость.</strong> Пользователю дашбордов выданы только <code>core</code> и <code>mart</code>; <code>raw</code> и <code>int</code> не видны даже в <code>system.tables</code>. Это надёжнее, чем просить агента об этом в промпте.</li>
+  <li><strong><code>readonly = 2</code> с потолками, а не <code>readonly = 1</code>.</strong> Значение 1 запрещает любой <code>SET</code>, и на этом падал плагин ClickHouse для Grafana: он выставляет <code>max_execution_time</code> на каждый запрос. Гарантия возвращена секцией <code>constraints</code> — настройку можно менять только в пределах потолка, а сами <code>readonly</code> и <code>allow_ddl</code> объявлены неизменяемыми.</li>
+  <li>Квоты: время выполнения, число прочитанных и возвращённых строк, память, часовая квота на пользователя.</li>
+  <li>Принудительный <code>LIMIT</code> на уровне MCP — только чтобы не топить контекст агента; защиту базы обеспечивает сервер.</li>
+  <li><strong>Секреты файлами, а не переменными.</strong> Содержимое env видно в <code>docker inspect</code> и попадает в логи оркестратора. Все пароли и токен монтируются в <code>/run/secrets/</code>.</li>
+  <li><strong>HTTP-транспорт требует Bearer-токен.</strong> Без него сервер не стартует. Проверка сделана ASGI-обёрткой — раньше любой маршрутизации; сравнение через <code>compare_digest</code>.</li>
+</ul>
+
+<p>Проверено семь запретов: поднять таймаут выше потолка (код 452), снять
+<code>readonly</code> (164), разрешить DDL (392), поднять лимит строк (452),
+запись, создание таблиц и чтение слоя <code>raw</code> (497).</p>
+
+<h2>Что реализовано</h2>
+<p class="section-lede">Всё перечисленное работает и покрыто тестами: 53 теста, из них интеграционные — против живых ClickHouse, Postgres и Grafana.</p>
+
+<table class="spec">
+  <thead><tr><th>Блок</th><th>Состояние</th><th>Проверено</th></tr></thead>
+  <tbody>
+    <tr><td>Интроспекция схемы</td><td><span class="pill pill-ok">готово</span></td>
+        <td>Агент переоткрыл новую предметную область без единой подсказки в промпте</td></tr>
+    <tr><td>Семантический слой, метрики, join-граф</td><td><span class="pill pill-ok">готово</span></td>
+        <td>11 метрик текущего домена; <code>origin='human'</code> не затирается автоматикой</td></tr>
+    <tr><td>Спеки дашбордов, уровни поддержки</td><td><span class="pill pill-ok">готово</span></td>
+        <td>Прогон с <code>only_maintained</code> пропускает разовые отчёты</td></tr>
+    <tr><td>Валидатор: broken, drifted, stale_metric</td><td><span class="pill pill-ok">готово</span></td>
+        <td>Тихий дрейф колонок ловится: запрос выполняется, но вернул не то</td></tr>
+    <tr><td>Адаптер Grafana, односторонний push</td><td><span class="pill pill-ok">готово</span></td>
+        <td>Идемпотентно по uid; все панели отдают данные через <code>/api/ds/query</code></td></tr>
+    <tr><td>HTML-отчёты со вшитыми данными</td><td><span class="pill pill-ok">готово</span></td>
+        <td>Ноль внешних ссылок, графики встроенным SVG, ошибка виджета не рушит отчёт</td></tr>
+    <tr><td>Снимки схемы, дифф, реакция</td><td><span class="pill pill-ok">готово</span></td>
+        <td>Замена домена целиком: 8 таблиц в orphaned, 10 черновиков, 8 метрик в stale</td></tr>
+    <tr><td>HTTP-транспорт, токен, пулы, секреты</td><td><span class="pill pill-ok">готово</span></td>
+        <td>60 из 60 параллельных запросов; секретов в <code>docker inspect</code> нет</td></tr>
+  </tbody>
+</table>
+
+<div class="principle">
+  <p><span class="k">Главная проверка: смена предметной области.</span>
+  Хранилище переключили с продаж на репетиторство — 8 таблиц исчезли, 10 появились,
+  все метрики устарели. Продуктовый код не потребовал <strong>ни одной правки</strong>:
+  агент нашёл новые таблицы поиском по комментариям, получил гранулярность и набор
+  значений интроспекцией, построил дашборд на новых метриках. Сломались только тесты,
+  которые жёстко ссылались на имена таблиц, — их пришлось перевести на обнаружение,
+  то есть заставить соблюдать тот же принцип, что и продуктовый код.</p>
+</div>
+
+<h2>Возможности развития</h2>
+<p class="section-lede">Сознательно не сделано. Порядок — по отношению пользы к трудозатратам.</p>
+
+<table class="spec">
+  <thead><tr><th>Направление</th><th>Зачем</th><th>Что мешает сейчас</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="pill pill-warn">1</span> Фоновое расписание</td>
+      <td>Снимки схемы и валидация дашбордов запускаются вручную</td>
+      <td>Нужен планировщик: cron в контейнере или внешний. Логика уже готова, нужен только вызов по времени</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-warn">2</span> Автообогащение черновиков</td>
+      <td>Новая таблица получает пустой черновик; описание пишет человек</td>
+      <td>Требуется отдельный агент, который сам вызывает <code>sample_data</code> и <code>profile_column</code> и заполняет описание</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-warn">3</span> Агент-починщик</td>
+      <td>Сломанные дашборды находятся, но чинит их человек</td>
+      <td><code>dash_list_broken</code> уже отдаёт ошибку и актуальную схему — не хватает цикла, который скармливает это агенту</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-draft">4</span> Разделение прав</td>
+      <td>Любой обладатель токена может заархивировать чужой дашборд</td>
+      <td>Токены на пользователя и проброс личности. Молчаливое затирание уже закрыто проверкой занятого uid</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-draft">5</span> Приоритет очереди ревью</td>
+      <td>Черновики сортируются по слою и дате, а не по реальной востребованности</td>
+      <td>Грант на <code>system.query_log</code> есть, частота использования таблиц не считается</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-draft">6</span> Кросс-фильтрация и drill-down</td>
+      <td>Клик по виджету не фильтрует остальные</td>
+      <td>Плохо портируется между таргетами; разумно только на собственном рендерере</td>
+    </tr>
+  </tbody>
+</table>
+
+<footer>Архитектура MCP-сервера для агентного построения дашбордов · ClickHouse + Postgres · документация проекта</footer>
+
+</div>

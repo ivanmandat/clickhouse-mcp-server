@@ -1,0 +1,168 @@
+services:
+  clickhouse:
+    # Версия закреплена: среда проверена на 26.8.1.2041
+    image: clickhouse/clickhouse-server:26.8
+    container_name: ${CH_CONTAINER:-mcp-clickhouse}
+    environment:
+      # entrypoint образа сам читает файл; пароль в env не попадает
+      CLICKHOUSE_PASSWORD_FILE: /run/secrets/ch_admin_password
+      # нужен, чтобы default мог выполнять CREATE USER / GRANT
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    secrets:
+      - ch_admin_password
+    ports:
+      # только петлевой интерфейс: наружу порты не торчат
+      - "127.0.0.1:${CH_HTTP_PORT:-8123}:8123"
+      - "127.0.0.1:${CH_NATIVE_PORT:-9000}:9000"
+    volumes:
+      - ch_data:/var/lib/clickhouse
+      # Монтируем ОТДЕЛЬНЫЕ ФАЙЛЫ, а не каталоги. Монтирование каталога скрывает
+      # то, что кладёт образ: в config.d это docker_related_config.xml с
+      # listen_host = 0.0.0.0 (без него сервер слушает только localhost внутри
+      # контейнера и проброс портов не работает), а в users.d entrypoint
+      # дописывает default-user.xml при заданном CLICKHOUSE_PASSWORD.
+      - ./clickhouse/config.d/local.xml:/etc/clickhouse-server/config.d/local.xml:ro
+      - ./clickhouse/users.d/dashboard_profile.xml:/etc/clickhouse-server/users.d/dashboard_profile.xml:ro
+      # скрипты слоёв доступны внутри как /sql — bootstrap гоняет их через --queries-file
+      - ./sql:/sql:ro
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    healthcheck:
+      # пароль читается из секрета, а не подставляется в командную строку:
+      # аргументы процесса видны любому, кто может смотреть ps
+      test: ["CMD-SHELL", "clickhouse-client --password \"$$(cat /run/secrets/ch_admin_password)\" --query 'SELECT 1'"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+    restart: unless-stopped
+
+  # Postgres под семантический слой. Включается профилем:
+  #     docker compose --profile with-postgres up -d
+  # На Linux-сервере это основной вариант. На машине разработки, где Postgres
+  # уже стоит на хосте, профиль не указывают и сервис не поднимается.
+  postgres:
+    image: postgres:18-alpine
+    container_name: mcp-postgres
+    profiles: ["with-postgres"]
+    environment:
+      POSTGRES_USER: ${PG_SUPERUSER:-postgres}
+      POSTGRES_DB: ${PG_DATABASE:-mcp_dwh}
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_password
+    secrets:
+      - pg_password
+    volumes:
+      # именно /var/lib/postgresql, а не .../data: образ postgres:18 требует
+      # единой точки монтирования, иначе падает при инициализации
+      - pg_data:/var/lib/postgresql
+      # схема семантического слоя накатывается при первой инициализации тома
+      - ./sql/pg:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "127.0.0.1:${PG_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_SUPERUSER:-postgres} -d ${PG_DATABASE:-mcp_dwh}"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.6.0
+    container_name: mcp-grafana
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GF_ADMIN_USER}
+      # Grafana сама разворачивает любые GF_*__FILE (двойное подчёркивание)
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/gf_admin_password
+      GF_INSTALL_PLUGINS: grafana-clickhouse-datasource
+      # переменные подставляются в файл провижининга
+      GF_DATASOURCE_UID: ${GF_DATASOURCE_UID}
+      CH_DASHBOARD_USER: ${CH_DASHBOARD_USER}
+      # локальная среда: не мучаем анонимной телеметрией и проверкой обновлений
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_USERS_DEFAULT_THEME: light
+    ports:
+      - "127.0.0.1:${GF_PORT:-3000}:3000"
+    volumes:
+      - gf_data:/var/lib/grafana
+      # отдельным файлом, а не каталогом: тот же урок, что и с config.d ClickHouse
+      - ./grafana/provisioning/datasources/clickhouse.yml:/etc/grafana/provisioning/datasources/clickhouse.yml:ro
+    secrets:
+      - gf_admin_password
+      - ch_dashboard_password
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health | grep -q ok"]
+      interval: 5s
+      timeout: 3s
+      retries: 40
+      start_period: 30s
+    restart: unless-stopped
+
+  mcp:
+    build: .
+    container_name: mcp-server
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    environment:
+      MCP_TRANSPORT: http
+      MCP_PORT: 8765
+      MCP_AUTH_TOKEN_FILE: /run/secrets/mcp_auth_token
+      # внутри сети compose обращаемся по именам сервисов, а не к 127.0.0.1
+      CH_HOST: clickhouse
+      CH_HTTP_PORT: 8123
+      CH_DASHBOARD_USER: ${CH_DASHBOARD_USER}
+      CH_DASHBOARD_PASSWORD_FILE: /run/secrets/ch_dashboard_password
+      PG_DSN_FILE: /run/secrets/pg_dsn
+      GF_URL: http://grafana:3000
+      GF_ADMIN_USER: ${GF_ADMIN_USER}
+      GF_ADMIN_PASSWORD_FILE: /run/secrets/gf_admin_password
+      GF_DATASOURCE_UID: ${GF_DATASOURCE_UID}
+      # каталог отчётов задаётся явно: расчёт по __file__ в установленном
+      # пакете даёт каталог интерпретатора, а не смонтированный том
+      MCP_REPORTS_DIR: /app/reports
+      # слои, видимые агенту; у заказчика могут называться иначе
+      CH_ALLOWED_DATABASES: ${CH_ALLOWED_DATABASES:-core,mart}
+      CH_SECURE: ${CH_SECURE:-false}
+    ports:
+      # наружу не публикуем: перед сервером должен стоять обратный прокси с TLS
+      - "127.0.0.1:${MCP_PORT:-8765}:8765"
+    volumes:
+      - ./reports:/app/reports
+    secrets:
+      - mcp_auth_token
+      - ch_dashboard_password
+      - pg_dsn
+      - gf_admin_password
+    extra_hosts:
+      # Postgres живёт на хосте; на Linux-сервере заказчика, где он будет
+      # в compose, эту строку и секрет pg_dsn нужно поправить
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+# Файловые секреты: содержимое монтируется в /run/secrets/<имя> и, в отличие
+# от переменных окружения, не видно в `docker inspect` и не утекает в логи
+# оркестратора. Каталог secrets/ в git не попадает.
+secrets:
+  ch_admin_password:
+    file: ./secrets/ch_admin_password
+  ch_dashboard_password:
+    file: ./secrets/ch_dashboard_password
+  gf_admin_password:
+    file: ./secrets/gf_admin_password
+  mcp_auth_token:
+    file: ./secrets/mcp_auth_token
+  pg_dsn:
+    file: ./secrets/pg_dsn
+  pg_password:
+    file: ./secrets/pg_password
+
+volumes:
+  ch_data:
+  gf_data:
+  pg_data:

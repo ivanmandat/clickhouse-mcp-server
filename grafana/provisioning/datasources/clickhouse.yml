@@ -1,0 +1,25 @@
+# Источник данных провижинится файлом, а не руками: Grafana в этой схеме —
+# одноразовая проекция, её состояние должно полностью пересоздаваться.
+apiVersion: 1
+
+datasources:
+  - name: ClickHouse
+    uid: ${GF_DATASOURCE_UID}
+    type: grafana-clickhouse-datasource
+    access: proxy
+    isDefault: true
+    editable: false
+    jsonData:
+      # имя сервиса в сети compose, не localhost: Grafana ходит из контейнера
+      host: clickhouse
+      port: 9000
+      protocol: native
+      secure: false
+      username: ${CH_DASHBOARD_USER}
+      defaultDatabase: mart
+      # держим ниже потолка max_execution_time в профиле ClickHouse
+      queryTimeout: 30
+    secureJsonData:
+      # $__file{} — штатный способ Grafana читать секрет из файла.
+      # Через ${ПЕРЕМЕННУЮ} пароль пришлось бы держать в env контейнера.
+      password: $__file{/run/secrets/ch_dashboard_password}

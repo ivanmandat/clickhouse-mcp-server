@@ -1,0 +1,574 @@
+<title>Спек дашборда</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@500;600;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root {
+  --bg: #F7F8FA;
+  --surface: #FFFFFF;
+  --ink: #1C2128;
+  --muted: #5B6472;
+  --line: #D9DEE6;
+  --line-soft: #E7EBF0;
+  --ch: #C77E1A;
+  --pg: #3D6FA8;
+  --pg-soft: #EAF1F8;
+  --agent: #7A5FBF;
+  --agent-soft: #F1EDF9;
+  --ok: #3E8E5A;
+  --ok-soft: #E7F3EC;
+  --warn: #B4651E;
+  --warn-soft: #FAEFE3;
+  --crit: #B54545;
+  --crit-soft: #F9EAEA;
+  --draft: #6B7480;
+  --draft-soft: #EEF0F3;
+  --code-bg: #EEF1F5;
+  --pre-bg: #F2F4F7;
+  --key: #2F6F8F;
+  --str: #7A5030;
+  --cmt: #8A93A0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14171C;
+    --surface: #1D2229;
+    --ink: #E8EBF0;
+    --muted: #98A2B0;
+    --line: #333B47;
+    --line-soft: #2A313B;
+    --ch: #E8A94F;
+    --pg: #6FA3DC;
+    --pg-soft: #1A2736;
+    --agent: #A78FE0;
+    --agent-soft: #272033;
+    --ok: #61B683;
+    --ok-soft: #1B2C22;
+    --warn: #D98D48;
+    --warn-soft: #302315;
+    --crit: #D97070;
+    --crit-soft: #331D1D;
+    --draft: #8B95A3;
+    --draft-soft: #262C34;
+    --code-bg: #242A33;
+    --pre-bg: #171C22;
+    --key: #7FB8D4;
+    --str: #D7A87A;
+    --cmt: #6E7885;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14171C;
+  --surface: #1D2229;
+  --ink: #E8EBF0;
+  --muted: #98A2B0;
+  --line: #333B47;
+  --line-soft: #2A313B;
+  --ch: #E8A94F;
+  --pg: #6FA3DC;
+  --pg-soft: #1A2736;
+  --agent: #A78FE0;
+  --agent-soft: #272033;
+  --ok: #61B683;
+  --ok-soft: #1B2C22;
+  --warn: #D98D48;
+  --warn-soft: #302315;
+  --crit: #D97070;
+  --crit-soft: #331D1D;
+  --draft: #8B95A3;
+  --draft-soft: #262C34;
+  --code-bg: #242A33;
+  --pre-bg: #171C22;
+  --key: #7FB8D4;
+  --str: #D7A87A;
+  --cmt: #6E7885;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Golos Text", "Segoe UI", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  margin: 0;
+  padding: 0 24px 96px;
+}
+.wrap { max-width: 900px; margin: 0 auto; }
+header.hero { padding: 60px 0 8px; }
+.eyebrow {
+  font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+h1 {
+  font-family: "Onest", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(32px, 4.6vw, 44px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  text-wrap: balance;
+}
+.lede { font-size: 17.5px; color: var(--muted); max-width: 640px; margin: 0; }
+.backlink { font-size: 14px; margin-top: 20px; }
+.backlink a { color: var(--pg); text-decoration: none; border-bottom: 1px solid var(--line); }
+.backlink a:hover { border-bottom-color: var(--pg); }
+h2 {
+  font-family: "Onest", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 25px;
+  letter-spacing: -0.01em;
+  margin: 68px 0 8px;
+  text-wrap: balance;
+}
+h3 {
+  font-family: "Onest", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 17.5px;
+  margin: 34px 0 6px;
+}
+p { margin: 12px 0; max-width: 700px; }
+p.section-lede { color: var(--muted); margin-top: 4px; }
+code {
+  font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: 0.86em;
+  background: var(--code-bg);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+pre {
+  background: var(--pre-bg);
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  padding: 18px 20px;
+  overflow-x: auto;
+  font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 20px 0;
+}
+pre code { background: none; padding: 0; font-size: inherit; }
+.c { color: var(--cmt); font-style: italic; }
+.k { color: var(--key); }
+.s { color: var(--str); }
+figure {
+  margin: 28px 0;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  padding: 24px 20px 16px;
+  overflow-x: auto;
+}
+figure svg { display: block; min-width: 680px; max-width: 100%; height: auto; margin: 0 auto; }
+figcaption { font-size: 13.5px; color: var(--muted); margin-top: 14px; text-align: center; }
+table.spec { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14.5px; }
+table.spec th {
+  text-align: left;
+  font-family: "Onest", system-ui, sans-serif;
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 8px 14px 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+table.spec td { padding: 10px 14px 10px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+table.spec td:first-child { white-space: nowrap; }
+ul.tight { max-width: 700px; padding-left: 22px; }
+ul.tight li { margin: 9px 0; }
+ul.tight li::marker { color: var(--muted); }
+ol.tight { max-width: 700px; padding-left: 22px; }
+ol.tight li { margin: 9px 0; }
+ol.tight li::marker { color: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 13px; }
+.principle {
+  border-left: 3px solid var(--agent);
+  background: var(--surface);
+  border-radius: 0 10px 10px 0;
+  padding: 16px 22px;
+  margin: 24px 0;
+  max-width: 700px;
+}
+.principle p { margin: 0; }
+.principle .kk {
+  font-family: "Onest", system-ui, sans-serif;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+.pill {
+  display: inline-block;
+  font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.pill-ok { background: var(--ok-soft); color: var(--ok); }
+.pill-warn { background: var(--warn-soft); color: var(--warn); }
+.pill-crit { background: var(--crit-soft); color: var(--crit); }
+.pill-draft { background: var(--draft-soft); color: var(--draft); }
+footer {
+  margin-top: 80px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line-soft);
+  font-size: 13px;
+  color: var(--muted);
+}
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <p class="eyebrow">Референс · sem.dashboards.spec · версия 1 · реализовано</p>
+  <h1>Спек дашборда</h1>
+  <p class="lede">Декларативный JSON, который пишет агент и хранит Postgres. Он же — единственное, что читают адаптер рендера и валидатор схемы. Портируемое подмножество вместо родной модели любого BI-инструмента.</p>
+  <p class="backlink">↖ Часть архитектуры: <a href="architecture.html">Живая схема</a></p>
+</header>
+
+<div class="principle" style="border-left-color:var(--ok)">
+  <p><span class="kk">Статус: формат реализован и работает.</span>
+  Спеки хранятся в <code>sem.dashboards</code> с версионированием, валидатор
+  проверяет каждый виджет по контракту ниже, адаптер компилирует спек в дашборд
+  Grafana. Отклонения от описанного здесь отмечены отдельно.</p>
+</div>
+
+<h2>Четыре решения, на которых держится формат</h2>
+
+<div class="principle">
+  <p><span class="kk">1. Два вида запроса, явно различённых.</span>
+  <code>kind: "metric"</code> ссылается на определение из <code>sem_metrics</code>, <code>kind: "sql"</code> несёт сырой SQL. Это не стилистический выбор: виджеты на метриках переживают переименование колонки без участия агента — правится одно определение, и все виджеты следуют за ним. Виджеты на сыром SQL приходится чинить поштучно.</p>
+</div>
+
+<div class="principle">
+  <p><span class="kk">2. Строки с долями ширины вместо координатной сетки.</span>
+  Grafana использует 24 колонки, Superset — 12, у каждого свой формат раскладки. Агент, расставляющий абсолютные <code>x/y/w/h</code>, регулярно порождает наложения и дыры. Спек описывает раскладку как список строк, внутри каждой — виджеты с долей ширины из 12; адаптер разворачивает это в родную сетку таргета.</p>
+</div>
+
+<div class="principle">
+  <p><span class="kk">3. Виджет объявляет колонки, которые ожидает получить.</span>
+  Поле <code>declared_columns</code> ловит класс поломок, который иначе проходит незамеченным: запрос по-прежнему выполняется без ошибки, но возвращает другой набор колонок, и график молча пустеет. Валидатор сверяет объявленное с фактическим.</p>
+</div>
+
+<div class="principle">
+  <p><span class="kk">4. Параметры типизированы и подставляются сервером.</span>
+  Агент никогда не конкатенирует значения в SQL — он ссылается на параметр через <code>:name</code>, а сервер рендерит его сам. Это одновременно защита от инъекции и условие портируемости: один и тот же спек превращается в переменную Grafana, в фильтр Superset или в плейсхолдер собственного рендерера.</p>
+</div>
+
+<h2>Скелет</h2>
+<p class="section-lede">Полный пример: два stat-виджета и график на метриках, таблица на сыром SQL.</p>
+
+<pre><code>{
+  <span class="k">"spec_version"</span>: <span class="s">"1"</span>,
+  <span class="k">"uid"</span>: <span class="s">"revenue-overview"</span>,            <span class="c">// стабильный ключ идемпотентного push</span>
+  <span class="k">"title"</span>: <span class="s">"Обзор выручки"</span>,
+  <span class="k">"description"</span>: <span class="s">"Динамика и разрез по странам"</span>,
+
+  <span class="k">"params"</span>: [
+    { <span class="k">"name"</span>: <span class="s">"period"</span>, <span class="k">"type"</span>: <span class="s">"time_range"</span>, <span class="k">"default"</span>: <span class="s">"last_30d"</span> },
+    { <span class="k">"name"</span>: <span class="s">"country"</span>, <span class="k">"type"</span>: <span class="s">"enum"</span>, <span class="k">"multi"</span>: true, <span class="k">"default"</span>: [],
+      <span class="k">"options"</span>: { <span class="k">"from_dimension"</span>: { <span class="k">"table"</span>: <span class="s">"orders"</span>, <span class="k">"column"</span>: <span class="s">"country"</span> } } }
+  ],
+
+  <span class="k">"rows"</span>: [
+    { <span class="k">"widgets"</span>: [
+
+      { <span class="k">"id"</span>: <span class="s">"total_revenue"</span>, <span class="k">"width"</span>: 3, <span class="k">"viz"</span>: <span class="s">"stat"</span>, <span class="k">"title"</span>: <span class="s">"Выручка"</span>,
+        <span class="k">"query"</span>: {
+          <span class="k">"kind"</span>: <span class="s">"metric"</span>,
+          <span class="k">"metric"</span>: <span class="s">"revenue"</span>,               <span class="c">// → sem_metrics.name</span>
+          <span class="k">"time"</span>: { <span class="k">"param"</span>: <span class="s">"period"</span> },
+          <span class="k">"filters"</span>: [ { <span class="k">"dimension"</span>: <span class="s">"country"</span>, <span class="k">"op"</span>: <span class="s">"in"</span>, <span class="k">"param"</span>: <span class="s">"country"</span> } ]
+        },
+        <span class="k">"encoding"</span>: { <span class="k">"value"</span>: <span class="s">"revenue"</span>, <span class="k">"compare_to"</span>: <span class="s">"previous_period"</span> },
+        <span class="k">"format"</span>: { <span class="k">"unit"</span>: <span class="s">"RUB"</span>, <span class="k">"decimals"</span>: 0 } },
+
+      { <span class="k">"id"</span>: <span class="s">"orders_count"</span>, <span class="k">"width"</span>: 3, <span class="k">"viz"</span>: <span class="s">"stat"</span>, <span class="k">"title"</span>: <span class="s">"Заказы"</span>,
+        <span class="k">"query"</span>: { <span class="k">"kind"</span>: <span class="s">"metric"</span>, <span class="k">"metric"</span>: <span class="s">"orders"</span>, <span class="k">"time"</span>: { <span class="k">"param"</span>: <span class="s">"period"</span> } },
+        <span class="k">"encoding"</span>: { <span class="k">"value"</span>: <span class="s">"orders"</span> } },
+
+      { <span class="k">"id"</span>: <span class="s">"revenue_trend"</span>, <span class="k">"width"</span>: 6, <span class="k">"viz"</span>: <span class="s">"line"</span>, <span class="k">"title"</span>: <span class="s">"Динамика"</span>,
+        <span class="k">"query"</span>: {
+          <span class="k">"kind"</span>: <span class="s">"metric"</span>, <span class="k">"metric"</span>: <span class="s">"revenue"</span>,
+          <span class="k">"grain"</span>: <span class="s">"day"</span>,                     <span class="c">// разбивка по времени</span>
+          <span class="k">"dimensions"</span>: [<span class="s">"country"</span>],
+          <span class="k">"time"</span>: { <span class="k">"param"</span>: <span class="s">"period"</span> }
+        },
+        <span class="k">"encoding"</span>: { <span class="k">"x"</span>: <span class="s">"ts"</span>, <span class="k">"y"</span>: [<span class="s">"revenue"</span>], <span class="k">"series"</span>: <span class="s">"country"</span> } }
+    ]},
+
+    { <span class="k">"widgets"</span>: [
+      { <span class="k">"id"</span>: <span class="s">"top_customers"</span>, <span class="k">"width"</span>: 12, <span class="k">"viz"</span>: <span class="s">"table"</span>, <span class="k">"title"</span>: <span class="s">"Топ клиентов"</span>,
+        <span class="k">"query"</span>: {
+          <span class="k">"kind"</span>: <span class="s">"sql"</span>,
+          <span class="k">"sql"</span>: <span class="s">"SELECT customer_id, sum(amount) AS revenue, count() AS orders
+                   FROM orders
+                   WHERE {{ time_filter(created_at, :period) }}
+                     AND {{ filter(country, :country) }}
+                   GROUP BY customer_id
+                   ORDER BY revenue DESC
+                   LIMIT 100"</span>,
+          <span class="k">"declared_columns"</span>: [
+            { <span class="k">"name"</span>: <span class="s">"customer_id"</span>, <span class="k">"type"</span>: <span class="s">"UInt64"</span> },
+            { <span class="k">"name"</span>: <span class="s">"revenue"</span>,     <span class="k">"type"</span>: <span class="s">"Float64"</span> },
+            { <span class="k">"name"</span>: <span class="s">"orders"</span>,      <span class="k">"type"</span>: <span class="s">"UInt64"</span> }
+          ]
+        },
+        <span class="k">"encoding"</span>: { <span class="k">"columns"</span>: [<span class="s">"customer_id"</span>, <span class="s">"revenue"</span>, <span class="s">"orders"</span>] } }
+    ]}
+  ],
+
+  <span class="k">"meta"</span>: {
+    <span class="k">"origin"</span>: <span class="s">"agent"</span>,                      <span class="c">// agent | human</span>
+    <span class="k">"validation_status"</span>: <span class="s">"ok"</span>,             <span class="c">// ok | broken | unknown</span>
+    <span class="k">"last_validated_at"</span>: <span class="s">"2026-08-28T09:14:00Z"</span>
+  }
+}</code></pre>
+
+<h2>Почему вид запроса решает судьбу дашборда</h2>
+<p class="section-lede">Это главное практическое следствие формата — и причина, по которой агента стоит подталкивать к метрикам.</p>
+
+<figure>
+<svg viewBox="0 0 900 400" role="img" aria-label="Виджеты с kind metric ссылаются на одно определение в sem_metrics: при переименовании колонки правится одна запись и все виджеты продолжают работать без агента. Виджеты с kind sql несут запрос внутри себя, валидатор ловит падение каждого, и агент чинит каждый отдельно." style="color: var(--ink)">
+  <defs>
+    <marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="currentColor"/>
+    </marker>
+    <marker id="a5c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--crit)"/>
+    </marker>
+  </defs>
+
+  <text x="24" y="26" font-family="JetBrains Mono, monospace" font-size="12.5" font-weight="700" fill="var(--ok)">kind: "metric"</text>
+  <text x="24" y="238" font-family="JetBrains Mono, monospace" font-size="12.5" font-weight="700" fill="var(--crit)">kind: "sql"</text>
+
+  <g font-family="Golos Text, sans-serif" font-size="12">
+    <!-- lane A widgets -->
+    <rect x="24" y="42" width="132" height="32" rx="7" fill="var(--surface)" stroke="var(--line)" stroke-width="1.3"/>
+    <text x="90" y="63" text-anchor="middle" fill="currentColor">виджет · stat</text>
+    <rect x="24" y="84" width="132" height="32" rx="7" fill="var(--surface)" stroke="var(--line)" stroke-width="1.3"/>
+    <text x="90" y="105" text-anchor="middle" fill="currentColor">виджет · line</text>
+    <rect x="24" y="126" width="132" height="32" rx="7" fill="var(--surface)" stroke="var(--line)" stroke-width="1.3"/>
+    <text x="90" y="147" text-anchor="middle" fill="currentColor">виджет · table</text>
+
+    <!-- metric definition -->
+    <rect x="268" y="60" width="176" height="80" rx="10" fill="var(--pg-soft)" stroke="var(--pg)" stroke-width="1.6"/>
+    <text x="356" y="86" text-anchor="middle" font-weight="600" fill="currentColor" font-size="13">sem_metrics</text>
+    <text x="356" y="106" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="var(--muted)">revenue</text>
+    <text x="356" y="125" text-anchor="middle" font-size="11.5" fill="var(--muted)">одно определение SQL</text>
+
+    <!-- fix -->
+    <rect x="540" y="60" width="196" height="80" rx="10" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="1.6"/>
+    <text x="638" y="86" text-anchor="middle" font-weight="600" fill="currentColor" font-size="13">Колонку переименовали</text>
+    <text x="638" y="108" text-anchor="middle" font-size="12" fill="var(--muted)">правится одна запись</text>
+    <text x="638" y="126" text-anchor="middle" font-size="12" fill="var(--muted)">в определении метрики</text>
+
+    <text x="762" y="92" font-size="12" fill="var(--ok)" font-weight="600">все три виджета</text>
+    <text x="762" y="110" font-size="12" fill="var(--ok)" font-weight="600">живут дальше</text>
+    <text x="762" y="128" font-size="11.5" fill="var(--muted)">агент не нужен</text>
+
+    <!-- lane B widgets -->
+    <rect x="24" y="254" width="132" height="32" rx="7" fill="var(--surface)" stroke="var(--line)" stroke-width="1.3"/>
+    <text x="90" y="275" text-anchor="middle" fill="currentColor">виджет · table</text>
+    <rect x="24" y="296" width="132" height="32" rx="7" fill="var(--surface)" stroke="var(--line)" stroke-width="1.3"/>
+    <text x="90" y="317" text-anchor="middle" fill="currentColor">виджет · bar</text>
+
+    <rect x="268" y="256" width="176" height="72" rx="10" fill="var(--surface)" stroke="var(--crit)" stroke-width="1.5"/>
+    <text x="356" y="282" text-anchor="middle" font-weight="600" fill="currentColor" font-size="13">SQL вшит в виджет</text>
+    <text x="356" y="303" text-anchor="middle" font-size="12" fill="var(--muted)">своя копия у каждого</text>
+
+    <rect x="540" y="256" width="196" height="72" rx="10" fill="var(--crit-soft)" stroke="var(--crit)" stroke-width="1.6"/>
+    <text x="638" y="282" text-anchor="middle" font-weight="600" fill="currentColor" font-size="13">dry-run падает</text>
+    <text x="638" y="303" text-anchor="middle" font-size="12" fill="var(--muted)">у каждого отдельно</text>
+
+    <text x="762" y="288" font-size="12" fill="var(--crit)" font-weight="600">агент чинит</text>
+    <text x="762" y="306" font-size="12" fill="var(--crit)" font-weight="600">каждый виджет</text>
+  </g>
+
+  <!-- arrows lane A -->
+  <g stroke="currentColor" stroke-width="1.4" fill="none">
+    <path d="M 156 58 C 210 62, 226 92, 264 98" marker-end="url(#a5)"/>
+    <line x1="156" y1="100" x2="264" y2="100" marker-end="url(#a5)"/>
+    <path d="M 156 142 C 210 138, 226 108, 264 102" marker-end="url(#a5)"/>
+    <line x1="444" y1="100" x2="536" y2="100" marker-end="url(#a5)"/>
+  </g>
+  <!-- arrows lane B -->
+  <g stroke="var(--crit)" stroke-width="1.4" fill="none">
+    <path d="M 156 270 C 210 272, 226 286, 264 288" marker-end="url(#a5c)"/>
+    <path d="M 156 312 C 210 310, 226 296, 264 294" marker-end="url(#a5c)"/>
+    <line x1="444" y1="292" x2="536" y2="292" marker-end="url(#a5c)"/>
+  </g>
+  <g font-family="Golos Text, sans-serif" font-size="11.5" fill="var(--muted)">
+    <text x="210" y="180" text-anchor="middle">ссылаются на общее</text>
+    <text x="210" y="356" text-anchor="middle">каждый несёт своё</text>
+  </g>
+
+  <line x1="24" y1="204" x2="876" y2="204" stroke="var(--line)" stroke-width="1" stroke-dasharray="4 5"/>
+</svg>
+<figcaption>Переименование колонки: метрика — одна правка на все виджеты, сырой SQL — починка каждого. Это и есть аргумент за то, чтобы агент по умолчанию тянулся к метрикам.</figcaption>
+</figure>
+
+<p>Практический вывод для промпта агента: сначала <code>search_metrics</code>, и только если подходящей метрики нет — сырой SQL плюс предложение завести метрику через <code>suggest_semantic_update</code>. Так семантический слой растёт естественно, а доля хрупких виджетов падает со временем.</p>
+
+<h2>Разбор полей</h2>
+
+<h3>Параметры</h3>
+<table class="spec">
+  <thead><tr><th>Тип</th><th>Значение</th><th>Во что превращается</th></tr></thead>
+  <tbody>
+    <tr><td><code>time_range</code></td><td><code>last_30d</code>, <code>this_month</code> или пара ISO-дат</td><td>Пикер периода Grafana; предикат по времени в SQL</td></tr>
+    <tr><td><code>enum</code></td><td>Список значений; <code>options.from_dimension</code> подтягивает их запросом</td><td>Template-переменная с автодополнением</td></tr>
+    <tr><td><code>number</code> / <code>string</code></td><td>Скаляр с <code>default</code></td><td>Типизированный плейсхолдер, не конкатенация</td></tr>
+  </tbody>
+</table>
+
+<p>В сыром SQL параметры доступны только через два макроса и ссылку <code>:name</code>:</p>
+
+<pre><code><span class="k">{{ time_filter(created_at, :period) }}</span>
+  <span class="c">→ created_at >= toDateTime('...') AND created_at &lt; toDateTime('...')</span>
+
+<span class="k">{{ filter(country, :country) }}</span>
+  <span class="c">→ country IN ('RU','KZ')     — когда параметр заполнен</span>
+  <span class="c">→ 1                          — когда пуст</span></code></pre>
+
+<p>Раскрытие пустого мультиселекта в <code>1</code> — мелочь, которая отделяет работающий спек от неработающего: иначе снятый фильтр ломает запрос синтаксически.</p>
+
+<div class="principle" style="border-left-color:var(--warn)">
+  <p><span class="kk">Отклонение от реализации.</span>
+  Макросы <code>time_filter</code> и <code>filter</code> в спеке описаны, но
+  пока не разворачиваются сервером: параметры работают на уровне метрик
+  (<code>date_from</code> / <code>date_to</code> в <code>sem_compile_metric</code>)
+  и переменных Grafana. Для виджетов на сыром SQL параметризация — направление
+  развития; сейчас такой SQL пишется с явными условиями.</p>
+</div>
+
+<h3>Типы визуализации и энкодинг</h3>
+<p>Закрытый список — портируемое пересечение таргетов. Энкодинг ссылается на имена колонок из результата запроса, а не на индексы: так поломка от смены порядка колонок исключена по конструкции.</p>
+
+<table class="spec">
+  <thead><tr><th><code>viz</code></th><th>Обязательный энкодинг</th></tr></thead>
+  <tbody>
+    <tr><td><code>line</code>, <code>area</code>, <code>bar</code>, <code>stacked_bar</code></td><td><code>x</code>, <code>y[]</code>, опционально <code>series</code></td></tr>
+    <tr><td><code>stat</code></td><td><code>value</code>, опционально <code>compare_to</code></td></tr>
+    <tr><td><code>table</code></td><td><code>columns[]</code></td></tr>
+    <tr><td><code>pie</code></td><td><code>label</code>, <code>value</code></td></tr>
+    <tr><td><code>heatmap</code></td><td><code>x</code>, <code>y</code>, <code>value</code></td></tr>
+    <tr><td><code>text</code></td><td>Без запроса: markdown-врезка для пояснений</td></tr>
+  </tbody>
+</table>
+
+<h2>Контракт валидатора</h2>
+<p class="section-lede">Что именно проверяет фоновый прогон по каждому виджету — и какой статус кладёт в <code>widget_validation</code>.</p>
+
+<ol class="tight">
+  <li><strong>Запрос компилируется.</strong> <code>EXPLAIN</code> с параметрами в значениях по умолчанию — без чтения данных.</li>
+  <li><strong>Фактические колонки покрывают объявленные.</strong> <code>declared_columns</code> сверяются с тем, что реально вернул бы запрос.</li>
+  <li><strong>Энкодинг ссылается на существующие колонки.</strong> Все имена из <code>encoding</code> есть в <code>declared_columns</code>.</li>
+  <li><strong>Метрика жива.</strong> Для <code>kind: "metric"</code> — запись в <code>sem_metrics</code> существует и её статус не <code>orphaned</code>.</li>
+  <li><strong>Измерения и фильтры существуют.</strong> Колонки из <code>dimensions</code> и <code>filters</code> есть в актуальной схеме.</li>
+  <li><strong>Параметры объявлены.</strong> Каждый <code>:name</code> в SQL присутствует в <code>params</code>.</li>
+</ol>
+
+<p>Статусы виджета: <span class="pill pill-ok">ok</span> <span class="pill pill-crit">broken</span> — запрос не компилируется <span class="pill pill-warn">drifted</span> — компилируется, но набор колонок разошёлся с объявленным <span class="pill pill-draft">stale_metric</span> — метрика не найдена или помечена <code>stale</code>. Дашборд получает худший статус среди своих виджетов, а <code>dash_list_broken</code> отдаёт виджет и текст ошибки.</p>
+
+<p>Проверки 1–4 и 6 реализованы в <code>validation.py</code>. Проверка 5
+(существование колонок из <code>dimensions</code> и <code>filters</code>)
+выполняется косвенно: скомпилированный SQL метрики не пройдёт валидацию,
+если колонки нет.</p>
+
+<p><strong>Уровень поддержки.</strong> Помимо описанного здесь, у дашборда есть
+поле <code>maintenance</code> с тремя значениями: <code>maintained</code>
+валидируется и попадает в очередь починки, <code>unmaintained</code> хранится
+без проверок, <code>archived</code> скрыт из выдачи. По умолчанию поддержка
+выключена — стоимость фонового прогона растёт с числом дашбордов, а разовых
+отчётов у агента всегда больше, чем постоянных.</p>
+
+<h2>Хранение</h2>
+
+<pre><code><span class="k">create table</span> dashboards (
+  uid                text <span class="k">primary key</span>,
+  title              text <span class="k">not null</span>,
+  spec               jsonb <span class="k">not null</span>,
+  spec_version       text <span class="k">not null</span>,
+  origin             text <span class="k">not null</span>,          <span class="c">-- agent | human</span>
+  validation_status  text <span class="k">not null default</span> <span class="s">'unknown'</span>,
+  last_validated_at  timestamptz,
+  created_at         timestamptz <span class="k">not null default</span> now(),
+  updated_at         timestamptz <span class="k">not null default</span> now()
+);
+
+<span class="k">create table</span> dashboard_versions (
+  uid        text <span class="k">not null references</span> dashboards(uid) <span class="k">on delete cascade</span>,
+  version    int  <span class="k">not null</span>,
+  spec       jsonb <span class="k">not null</span>,
+  author     text,
+  note       text,                       <span class="c">-- «починка после переименования revenue»</span>
+  created_at timestamptz <span class="k">not null default</span> now(),
+  <span class="k">primary key</span> (uid, version)
+);
+
+<span class="k">create table</span> widget_validation (
+  uid        text <span class="k">not null</span>,
+  widget_id  text <span class="k">not null</span>,
+  status     text <span class="k">not null</span>,               <span class="c">-- ok | broken | drifted | stale_metric</span>
+  error      text,
+  checked_at timestamptz <span class="k">not null default</span> now(),
+  <span class="k">primary key</span> (uid, widget_id)
+);
+
+<span class="k">create index</span> <span class="k">on</span> dashboards <span class="k">using</span> gin (spec jsonb_path_ops);</code></pre>
+
+<p>GIN-индекс окупается одним запросом — анализом влияния перед правкой метрики:</p>
+
+<pre><code><span class="c">-- какие дашборды сломает изменение определения revenue</span>
+<span class="k">select</span> uid, title <span class="k">from</span> dashboards
+<span class="k">where</span> spec <span class="k">@?</span> <span class="s">'$.rows[*].widgets[*].query ? (@.kind == "metric" &amp;&amp; @.metric == "revenue")'</span>;</code></pre>
+
+<h2>Как спек ложится в Grafana</h2>
+<p class="section-lede">Адаптер компилирует спек целиком в один дашборд-JSON и заливает его <code>POST /api/dashboards/db</code>. Метрики разворачиваются в SQL на стороне сервера — в Grafana понятия метрики нет.</p>
+
+<table class="spec">
+  <thead><tr><th>Поле спека</th><th>В Grafana</th></tr></thead>
+  <tbody>
+    <tr><td><code>uid</code></td><td><code>dashboard.uid</code> — тот же uid перезаписывает, отсюда идемпотентность</td></tr>
+    <tr><td><code>params[time_range]</code></td><td><code>time.from</code> / <code>time.to</code> плюс пикер периода</td></tr>
+    <tr><td><code>params[enum]</code></td><td><code>templating.list[]</code> — переменная с запросом за значениями</td></tr>
+    <tr><td><code>rows[].widgets[].width</code></td><td><code>gridPos</code>: доля из 12 умножается на 2 — сетка Grafana 24-колоночная</td></tr>
+    <tr><td><code>viz</code></td><td><code>timeseries</code>, <code>barchart</code>, <code>stat</code>, <code>table</code>, <code>piechart</code>, <code>heatmap</code>, <code>text</code></td></tr>
+    <tr><td><code>query</code></td><td><code>targets[0].rawSql</code>; макросы становятся <code>$__timeFilter()</code> и <code>$var</code></td></tr>
+    <tr><td><code>encoding</code></td><td><code>fieldConfig</code> и <code>transformations</code> — какие поля куда отображаются</td></tr>
+  </tbody>
+</table>
+
+<p>Обратный разбор не нужен: валидатор работает по спеку в Postgres, а не по тому, что лежит в Grafana. Именно поэтому push односторонний.</p>
+
+<h2>Что реализовано из этого документа</h2>
+<table class="spec">
+  <thead><tr><th>Элемент</th><th>Статус</th></tr></thead>
+  <tbody>
+    <tr><td>Два вида запроса: <code>metric</code> и <code>sql</code></td><td><span class="pill pill-ok">готово</span></td></tr>
+    <tr><td>Строки с долями ширины, разворот в сетку Grafana</td><td><span class="pill pill-ok">готово</span></td></tr>
+    <tr><td><code>declared_columns</code> и обнаружение дрейфа</td><td><span class="pill pill-ok">готово</span></td></tr>
+    <tr><td>Типы визуализации и энкодинг</td><td><span class="pill pill-ok">готово</span></td></tr>
+    <tr><td>Контракт валидатора, статусы виджета</td><td><span class="pill pill-ok">готово</span></td></tr>
+    <tr><td>Хранение, версии, GIN-индекс, анализ влияния</td><td><span class="pill pill-ok">готово</span></td></tr>
+    <tr><td>Маппинг в Grafana</td><td><span class="pill pill-ok">готово</span></td></tr>
+    <tr><td>Параметры <code>time_range</code> и <code>enum</code> в Grafana</td><td><span class="pill pill-ok">готово</span></td></tr>
+    <tr><td>Макросы <code>time_filter</code> / <code>filter</code> в сыром SQL</td><td><span class="pill pill-warn">не реализовано</span></td></tr>
+    <tr><td>Уровень поддержки дашборда</td><td><span class="pill pill-ok">сверх спека</span></td></tr>
+  </tbody>
+</table>
+
+<h2>Что оставлено за рамками версии 1</h2>
+<ul class="tight">
+  <li><strong>Кросс-фильтрация</strong> — клик по одному виджету фильтрует остальные. Портируется плохо, стоит дорого; при необходимости лучше решать на собственном рендерере.</li>
+  <li><strong>Drill-down</strong> в детализирующий дашборд. Отложить до момента, когда появится реальный запрос от пользователей.</li>
+  <li><strong>Алерты</strong> — у Grafana своя модель, дублировать её в спеке смысла нет; проще завести их вручную поверх сгенерированного дашборда.</li>
+  <li><strong>Права доступа</strong> — остаются на стороне таргета и вашей аутентификации, в спек не проникают.</li>
+</ul>
+
+<footer>Спек дашборда · версия 1 · документация проекта mcp-dwh</footer>
+
+</div>
