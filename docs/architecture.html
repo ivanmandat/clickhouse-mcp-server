@@ -829,6 +829,167 @@ footer {
   то есть заставить соблюдать тот же принцип, что и продуктовый код.</p>
 </div>
 
+<h2>Интеграция с инфраструктурой заказчика</h2>
+<p class="section-lede">У заказчика уже есть стек: загрузка на dlt, преобразования на dbt, оркестрация Prefect, BI — Datalens. Всё построенное здесь — MVP: часть деталей рассчитана на замену, часть остаётся.</p>
+
+<div class="legend">
+  <span><span class="swatch" style="background:var(--agent-soft);border:1.5px solid var(--agent)"></span>Инструмент заказчика — встаёт на место моей детали</span>
+  <span><span class="swatch" style="background:var(--ok-soft);border:1.5px solid var(--ok)"></span>Остаётся без изменений</span>
+  <span><span class="swatch" style="background:var(--warn-soft);border:1.5px solid var(--warn)"></span>Сейчас MVP-заглушка</span>
+</div>
+
+<figure>
+<svg viewBox="0 0 920 490" role="img" aria-label="Целевая схема: dlt грузит в raw, dbt строит слои int core mart, его manifest.json питает семантический слой MCP вместо ручного курирования, Prefect запускает снимки схемы и валидацию по расписанию, рендер идёт в Datalens вместо Grafana, HTML-отчёты остаются без изменений" style="color: var(--ink)">
+  <defs>
+    <marker id="a6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="currentColor"/>
+    </marker>
+    <marker id="a6p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--agent)"/>
+    </marker>
+  </defs>
+
+  <text x="24" y="34" font-family="Onest, sans-serif" font-size="12" font-weight="600" fill="var(--muted)" letter-spacing="1">ЗАГРУЗКА И ПРЕОБРАЗОВАНИЯ</text>
+
+  <g font-family="Golos Text, sans-serif" font-size="12.5">
+    <rect x="24" y="52" width="92" height="44" rx="8" fill="var(--surface)" stroke="var(--line)" stroke-width="1.3"/>
+    <text x="70" y="79" text-anchor="middle" fill="currentColor">источники</text>
+
+    <rect x="148" y="52" width="70" height="44" rx="8" fill="var(--agent-soft)" stroke="var(--agent)" stroke-width="1.6"/>
+    <text x="183" y="79" text-anchor="middle" font-weight="600" fill="currentColor">dlt</text>
+
+    <rect x="252" y="52" width="62" height="44" rx="8" fill="var(--ch-soft)" stroke="var(--ch)" stroke-width="1.4"/>
+    <text x="283" y="79" text-anchor="middle" fill="currentColor">raw</text>
+
+    <rect x="348" y="52" width="70" height="44" rx="8" fill="var(--agent-soft)" stroke="var(--agent)" stroke-width="1.6"/>
+    <text x="383" y="79" text-anchor="middle" font-weight="600" fill="currentColor">dbt</text>
+
+    <rect x="452" y="52" width="150" height="44" rx="8" fill="var(--ch-soft)" stroke="var(--ch)" stroke-width="1.4"/>
+    <text x="527" y="79" text-anchor="middle" fill="currentColor">int → core → mart</text>
+
+    <rect x="640" y="116" width="150" height="44" rx="8" fill="var(--agent-soft)" stroke="var(--agent)" stroke-width="1.6"/>
+    <text x="715" y="134" text-anchor="middle" font-weight="600" fill="currentColor" font-size="12">manifest.json</text>
+    <text x="715" y="151" text-anchor="middle" font-size="11" fill="var(--muted)">описания, линиж, тесты</text>
+  </g>
+
+  <g stroke="currentColor" stroke-width="1.4" fill="none">
+    <line x1="116" y1="74" x2="144" y2="74" marker-end="url(#a6)"/>
+    <line x1="218" y1="74" x2="248" y2="74" marker-end="url(#a6)"/>
+    <line x1="314" y1="74" x2="344" y2="74" marker-end="url(#a6)"/>
+    <line x1="418" y1="74" x2="448" y2="74" marker-end="url(#a6)"/>
+  </g>
+  <path d="M 604 88 C 630 100, 620 110, 636 130" stroke="var(--agent)" stroke-width="1.5" fill="none" stroke-dasharray="5 4" marker-end="url(#a6p)"/>
+
+  <g font-family="Golos Text, sans-serif">
+    <rect x="180" y="196" width="400" height="180" rx="12" fill="var(--surface)" stroke="currentColor" stroke-width="1.6"/>
+    <text x="380" y="222" text-anchor="middle" font-weight="600" font-size="14" fill="currentColor" font-family="Onest, sans-serif">MCP-сервер</text>
+
+    <rect x="200" y="236" width="360" height="40" rx="7" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="1.4"/>
+    <text x="380" y="261" text-anchor="middle" font-size="12.5" fill="currentColor">Интроспекция схемы — остаётся</text>
+
+    <rect x="200" y="284" width="360" height="40" rx="7" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.4"/>
+    <text x="380" y="303" text-anchor="middle" font-size="12.5" fill="currentColor">Семантический слой</text>
+    <text x="380" y="318" text-anchor="middle" font-size="11" fill="var(--muted)">описания вручную → из manifest.json</text>
+
+    <rect x="200" y="332" width="360" height="34" rx="7" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="1.4"/>
+    <text x="380" y="354" text-anchor="middle" font-size="12.5" fill="currentColor">Спеки дашбордов и валидатор — остаются</text>
+
+    <rect x="20" y="248" width="130" height="76" rx="10" fill="var(--agent-soft)" stroke="var(--agent)" stroke-width="1.6"/>
+    <text x="85" y="278" text-anchor="middle" font-weight="600" font-size="13" fill="currentColor">Prefect</text>
+    <text x="85" y="296" text-anchor="middle" font-size="11" fill="var(--muted)">снимки схемы,</text>
+    <text x="85" y="311" text-anchor="middle" font-size="11" fill="var(--muted)">валидация, починка</text>
+  </g>
+
+  <path d="M 648 160 C 620 220, 600 280, 566 300" stroke="var(--agent)" stroke-width="1.5" fill="none" marker-end="url(#a6p)"/>
+  <line x1="150" y1="286" x2="176" y2="286" stroke="var(--agent)" stroke-width="1.5" marker-end="url(#a6p)"/>
+  <text x="85" y="342" text-anchor="middle" font-family="Golos Text, sans-serif" font-size="11" fill="var(--muted)">по расписанию</text>
+
+  <text x="250" y="404" font-family="Onest, sans-serif" font-size="12" font-weight="600" fill="var(--muted)" letter-spacing="1">РЕНДЕР</text>
+  <g font-family="Golos Text, sans-serif" font-size="12.5">
+    <rect x="250" y="418" width="150" height="50" rx="9" fill="var(--agent-soft)" stroke="var(--agent)" stroke-width="1.6"/>
+    <text x="325" y="440" text-anchor="middle" font-weight="600" fill="currentColor">Datalens</text>
+    <text x="325" y="456" text-anchor="middle" font-size="11" fill="var(--muted)">вместо Grafana</text>
+
+    <rect x="430" y="418" width="160" height="50" rx="9" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="1.6"/>
+    <text x="510" y="440" text-anchor="middle" font-weight="600" fill="currentColor">HTML-отчёты</text>
+    <text x="510" y="456" text-anchor="middle" font-size="11" fill="var(--muted)">без изменений</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.4" fill="none">
+    <line x1="325" y1="376" x2="325" y2="414" marker-end="url(#a6)"/>
+    <line x1="510" y1="376" x2="510" y2="414" marker-end="url(#a6)"/>
+  </g>
+</svg>
+<figcaption>Ядро — интроспекция, спеки, валидатор — не зависит от того, чем грузят и чем рисуют. Заменяются края: источник описаний, планировщик и таргет рендера.</figcaption>
+</figure>
+
+<h3>Что меняется по компонентам</h3>
+<table class="spec">
+  <thead><tr><th>Компонент</th><th>Сейчас (MVP)</th><th>С инфраструктурой заказчика</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Слой <code>raw</code></td>
+      <td>Свои <code>_ingested_at</code>, <code>_batch_id</code>; данные генерирует SQL-скрипт</td>
+      <td>Пишет <strong>dlt</strong> со своими <code>_dlt_load_id</code> и служебными таблицами. Отслеживание схемы должно их игнорировать, иначе каждая загрузка даёт шум в диффе. Для агента неважно: <code>raw</code> ему закрыт грантами</td>
+    </tr>
+    <tr>
+      <td>Преобразования</td>
+      <td><code>60_transform.sql</code> — один файл с <code>INSERT SELECT</code></td>
+      <td><strong>dbt</strong>. Мои скрипты становятся не нужны целиком</td>
+    </tr>
+    <tr>
+      <td>Описания таблиц и колонок</td>
+      <td>Руками в <code>sem.tables</code> и <code>sem.columns</code></td>
+      <td>Из <code>manifest.json</code>: <code>description</code> моделей и колонок уже поддерживаются командой в <code>schema.yml</code> и проходят ревью в PR</td>
+    </tr>
+    <tr>
+      <td>Join-граф</td>
+      <td>Руками в <code>sem.relations</code></td>
+      <td><code>depends_on.nodes</code> — линиж, плюс тест <code>relationships</code></td>
+    </tr>
+    <tr>
+      <td>Подсказки по значениям</td>
+      <td>Руками в <code>value_hints</code></td>
+      <td>Тест <code>accepted_values</code> даёт список допустимых значений. Профилирование фактических остаётся за MCP: тест описывает намерение, профиль — что в таблице лежит на самом деле</td>
+    </tr>
+    <tr>
+      <td>Анализ влияния</td>
+      <td><code>dash_metric_impact</code> по jsonpath в спеках</td>
+      <td>Дополняется <code>exposures</code> dbt — дашборды объявляются потребителями модели прямо в репозитории</td>
+    </tr>
+    <tr>
+      <td>Расписание</td>
+      <td>Вызывается вручную</td>
+      <td><strong>Prefect</strong>. От MCP нужен CLI или пара HTTP-эндпоинтов: по MCP оркестратор ходить не станет</td>
+    </tr>
+    <tr>
+      <td>Рендер дашбордов</td>
+      <td>Адаптер Grafana, идемпотентный push одним JSON</td>
+      <td><strong>Datalens</strong>. Модель ближе к Superset: Подключение → Датасет → Чарт → Дашборд, несколько объектов вместо одного. Заменяется один модуль — ради этого адаптер и делался сменным</td>
+    </tr>
+    <tr>
+      <td>Отчёты</td>
+      <td>Самодостаточный HTML со вшитыми данными</td>
+      <td>Без изменений: BI здесь не участвует</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="principle">
+  <p><span class="k">Ядро не зависит от краёв.</span>
+  Интроспекция, спеки дашбордов и валидатор работают с любым стеком: они
+  обращаются к <code>system.tables</code> и <code>system.columns</code>, а не к
+  тому, чем эти таблицы наполнены. Заменяются только края — источник описаний,
+  планировщик и таргет рендера. Проверка сменой предметной области показала это
+  на схеме; смена инструментария затрагивает те же места.</p>
+</div>
+
+<h3>Что нужно выяснить</h3>
+<ul class="tight">
+  <li><strong>Используется ли dbt Semantic Layer (MetricFlow)?</strong> Если да — <code>sem.metrics</code> дублирует их метрики, и компилировать надо через определения dbt. Если нет, а чаще нет, — слой метрик остаётся и закрывает пробел.</li>
+  <li><strong>Насколько полон публичный API Datalens</strong> для программного создания чартов и дашбордов. Утверждать не берусь: проверяется документацией и пробой на их инсталляции. Если API окажется скудным — запасной вариант оставить Datalens для ручной аналитики, а агентские дашборды рендерить лёгким фронтом поверх спека.</li>
+  <li><strong>Доступ к репозиторию dbt</strong> или хотя бы к собранному <code>manifest.json</code> — от него зависит, можно ли проверить читатель манифеста на настоящих данных, а не на выдуманных.</li>
+</ul>
+
 <h2>Возможности развития</h2>
 <p class="section-lede">Сознательно не сделано. Порядок — по отношению пользы к трудозатратам.</p>
 
@@ -836,9 +997,19 @@ footer {
   <thead><tr><th>Направление</th><th>Зачем</th><th>Что мешает сейчас</th></tr></thead>
   <tbody>
     <tr>
-      <td><span class="pill pill-warn">1</span> Фоновое расписание</td>
-      <td>Снимки схемы и валидация дашбордов запускаются вручную</td>
-      <td>Нужен планировщик: cron в контейнере или внешний. Логика уже готова, нужен только вызов по времени</td>
+      <td><span class="pill pill-warn">1</span> Читатель manifest.json</td>
+      <td>Описания, линиж и допустимые значения перестанут дублировать dbt</td>
+      <td>Нужен доступ к собранному манифесту. Наибольшая польза: убирает риск расхождения двух источников описаний</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-warn">2</span> Адаптер Datalens</td>
+      <td>Grafana — MVP-таргет, у заказчика BI другой</td>
+      <td>Сначала разведка API. Спек и валидатор не меняются, заменяется один модуль</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-warn">3</span> CLI для Prefect</td>
+      <td>Снимки схемы и валидация запускаются вручную</td>
+      <td>Небольшая работа: логика готова, не хватает вызова извне MCP</td>
     </tr>
     <tr>
       <td><span class="pill pill-warn">2</span> Автообогащение черновиков</td>
